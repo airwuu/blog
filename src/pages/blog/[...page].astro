@@ -1,12 +1,15 @@
 ---
 import BlogCard from '@/components/BlogCard.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Link from '@/components/Link.astro'
+import { badgeVariants } from '@/components/ui/badge'
 import PageHead from '@/components/PageHead.astro'
 import PaginationComponent from '@/components/ui/pagination'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
-import { getAllPosts, groupPostsByYear } from '@/lib/data-utils'
+import { getAllPosts, groupPostsByYear, getSortedTags } from '@/lib/data-utils'
 import type { PaginateFunction } from 'astro'
+import { Icon } from 'astro-icon/components'
 
 export async function getStaticPaths({
   paginate,
@@ -21,6 +24,7 @@ const { page } = Astro.props
 
 const postsByYear = groupPostsByYear(page.data)
 const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
+const sortedTags = await getSortedTags()
 ---
 
 <Layout>
@@ -31,11 +35,27 @@ const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
       { label: `Page ${page.currentPage}`, icon: 'lucide:folder-open' },
     ]}
   />
-
-  <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
+  <div>
+    <div class="font-medium py-2">Tags:</div>
+    <div class="flex flex-wrap gap-2">
+      {
+        sortedTags.map(({ tag, count }) => (
+          <Link
+            href={`/tags/${tag}`}
+            class={badgeVariants({ variant: 'secondary' })}
+          >
+            <Icon name="lucide:hash" class="size-3" />
+            {tag}
+            <span class="text-muted-foreground ml-1.5">({count})</span>
+          </Link>
+        ))
+      }
+    </div>
+  </div>
+  <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-4">
     {
       years.map((year) => (
-        <section class="flex flex-col gap-y-4">
+        <section class="flex flex-col gap-y-2">
           <div class="font-medium">{year}</div>
           <ul class="flex flex-col gap-4">
             {postsByYear[year].map((post) => (
