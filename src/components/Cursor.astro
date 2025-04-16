@@ -1,0 +1,222 @@
+---
+// src/components/Cursor.astro
+// No server-side logic needed for this component
+---
+
+<div id="custom-cursor" class="custom-cursor">
+  <div id="cursor-inner" class="cursor-inner"></div>
+  <div id="cursor-outer" class="cursor-outer"></div>
+</div>
+
+<style>
+  @media (pointer: fine) {
+    html {
+       cursor: none; 
+    }
+
+    .custom-cursor {
+      --cursor-outer-size: 30px;
+      --cursor-inner-size: 8px;
+      --cursor-color: #ffffff; 
+      --cursor-hover-scale: 1.5;
+      --cursor-outer-delay: 0.03s; 
+    }
+
+    .cursor-outer,
+    .cursor-inner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 9999; 
+      mix-blend-mode: difference; 
+      opacity: 0; 
+      transition: opacity 0.3s ease;
+    }
+
+    .cursor-outer {
+      width: var(--cursor-outer-size);
+      height: var(--cursor-outer-size);
+      border: 2px solid var(--cursor-color);
+      transition-property: transform, width, height, border-width, opacity;
+      transition-duration: var(--cursor-outer-delay);
+      transition-timing-function: ease-out;
+    }
+
+    .cursor-inner {
+      width: var(--cursor-inner-size);
+      height: var(--cursor-inner-size);
+      background-color: var(--cursor-color);
+      /* Inner dot moves instantly */
+       transition-property: opacity;
+       transition-duration: 0.3s;
+       transition-timing-function: ease;
+    }
+
+
+    .custom-cursor.visible .cursor-outer,
+    .custom-cursor.visible .cursor-inner {
+        opacity: 1;
+    }
+
+    /* Class added on hover over interactive elements */
+    .custom-cursor.hover .cursor-outer {
+      transform: translate(-50%, -50%) scale(var(--cursor-hover-scale));
+      border-width: 1px; 
+       transition-duration: 0.1s;
+    }
+     .custom-cursor.hover .cursor-inner {
+        opacity: 0; 
+     }
+  }
+
+  @media (pointer: coarse) {
+    * {
+      cursor: auto;
+    }
+    .custom-cursor {
+      display: none; 
+    }
+  }
+</style>
+
+<script>
+  if (typeof window !== 'undefined') {
+    if (!window.cursorState) {
+      window.cursorState = {
+        mouseX: 0,
+        mouseY: 0,
+        outerX: 0,
+        outerY: 0,
+        isVisible: false,
+        isHovering: false,
+        animationFrameId: null
+      };
+    }
+  }
+
+  // Client-side script to move the cursor
+  function initCustomCursor() {
+    const cursorContainer = document.getElementById('custom-cursor');
+    const cursorInner = document.getElementById('cursor-inner');
+    const cursorOuter = document.getElementById('cursor-outer');
+  
+
+    if (cursorContainer && cursorInner && cursorOuter && window.matchMedia("(pointer: fine)").matches) {
+      const state = window.cursorState;
+      const interactiveElements = 'a, button, input, textarea, select, [role="button"], [tabindex]:not([tabindex="-1"])';
+  
+
+      if (state.animationFrameId) {
+        cancelAnimationFrame(state.animationFrameId);
+        state.animationFrameId = null;
+      }
+
+  
+      if (state.isVisible) {
+        cursorContainer.classList.add('visible');
+        cursorInner.style.transform = `translate(calc(${state.mouseX}px - 50%), calc(${state.mouseY}px - 50%))`;
+        cursorOuter.style.transform = `translate(calc(${state.outerX}px - 50%), calc(${state.outerY}px - 50%)) scale(${state.isHovering ? 'var(--cursor-hover-scale)' : '1'})`;
+      }
+
+
+      const handleMouseMove = (e) => {
+        state.mouseX = e.clientX;
+        state.mouseY = e.clientY;
+  
+
+        if (!state.isVisible) {
+          cursorContainer.classList.add('visible');
+          state.isVisible = true;
+        }
+
+        cursorInner.style.transform = `translate(calc(${state.mouseX}px - 50%), calc(${state.mouseY}px - 50%))`;
+      };
+  
+      const handleMouseLeave = () => {
+        cursorContainer.classList.remove('visible');
+        state.isVisible = false;
+      };
+  
+      const handleMouseEnter = (event) => {
+        state.mouseX = event.clientX;
+        state.mouseY = event.clientY;
+        state.outerX = state.mouseX; 
+        state.outerY = state.mouseY;
+        cursorContainer.classList.add('visible');
+        state.isVisible = true;
+      };
+  
+      const handleMouseOver = (e) => {
+        if (e.target.closest && e.target.closest(interactiveElements)) {
+          cursorContainer.classList.add('hover');
+          state.isHovering = true;
+        }
+      };
+  
+      const handleMouseOut = (e) => {
+        if (e.target.closest && e.target.closest(interactiveElements)) {
+          cursorContainer.classList.remove('hover');
+          state.isHovering = false;
+        }
+      };
+  
+      // Remove existing event listeners before adding new ones
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
+      
+      // Add event listeners
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseleave', handleMouseLeave);
+      document.addEventListener('mouseenter', handleMouseEnter);
+      document.addEventListener('mouseover', handleMouseOver);
+      document.addEventListener('mouseout', handleMouseOut);
+  
+      // Animation loop for the outer cursor's smooth follow
+      const animateOuterCursor = () => {
+        // Use linear interpolation (lerp) for smooth trailing
+        state.outerX += (state.mouseX - state.outerX) * 0.2; // Adjust 0.2 for more/less smoothing
+        state.outerY += (state.mouseY - state.outerY) * 0.2;
+  
+        cursorOuter.style.transform = `translate(calc(${state.outerX}px - 50%), calc(${state.outerY}px - 50%)) scale(${state.isHovering ? 'var(--cursor-hover-scale)' : '1'})`;
+  
+        state.animationFrameId = requestAnimationFrame(animateOuterCursor);
+      };
+  
+      // Start the animation loop
+      state.animationFrameId = requestAnimationFrame(animateOuterCursor);
+      
+    } else {
+      if (cursorContainer) {
+        cursorContainer.style.setProperty('display', 'none');
+      }
+    }
+  }
+  
+
+  document.addEventListener("astro:before-preparation", () => {
+    // Keep visibility and hover state through transitions
+    const cursorContainer = document.getElementById('custom-cursor');
+    if (cursorContainer && cursorContainer.classList.contains('visible')) {
+      window.cursorState.isVisible = true;
+    }
+    if (cursorContainer && cursorContainer.classList.contains('hover')) {
+      window.cursorState.isHovering = true;
+    }
+  });
+  
+
+  document.addEventListener("astro:page-load", initCustomCursor);
+  
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCustomCursor);
+  } else {
+    initCustomCursor();
+  }
+</script>

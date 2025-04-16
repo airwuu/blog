@@ -3,7 +3,9 @@ import { defineConfig } from 'astro/config'
 import mdx from '@astrojs/mdx'
 import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
+import prefetch from '@astrojs/prefetch';
 import icon from 'astro-icon'
+
 
 import expressiveCode from 'astro-expressive-code'
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
@@ -68,6 +70,7 @@ export default defineConfig({
     react(),
     sitemap(),
     icon(),
+    prefetch(),
   ],
   vite: {
     plugins: [tailwindcss()],

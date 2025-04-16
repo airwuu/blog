@@ -6,62 +6,120 @@ import { buttonVariants } from '@/components/ui/button'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
 import { getRecentPosts } from '@/lib/data-utils'
+import { Image } from 'astro:assets'
+import { ICON_MAP } from '@/consts'
+import type { SocialLink } from '@/types'
+import { Icon } from 'astro-icon/components'
+import { SOCIAL_LINKS } from '@/consts'
+interface Props {
+  links: SocialLink[]
+}
 
+let { links } = Astro.props
+links = SOCIAL_LINKS
 const blog = await getRecentPosts(SITE.featuredPostCount)
 ---
 
 <Layout>
+  
   <PageHead slot="head" title="Home" />
   <section>
-    <div class="rounded-lg border">
-      <div class="flex flex-col space-y-1.5 p-6">
-        <h3 class="text-3xl leading-none font-medium">er·u·dite</h3>
-        <p class="text-muted-foreground text-sm">
-          /ˈer(y)əˌdīt/ &bull; <span class="font-medium">adjective</span>
-        </p>
+    <div class="rounded-lg border flex">
+      <div class="flex flex-col space-y-1.5">
+        <div class="w-full h-full overflow-hidden translate-x-0.5">
+          <Image
+          src="/boycat.png"
+          alt="boy"
+          width={1200}
+          height={530}
+          class=" w-full h-full object-cover noise"
+          />
+        </div>
       </div>
-      <div class="p-6 pt-0">
-        <p class="text-muted-foreground mb-2 text-sm">
-          astro-erudite is an opinionated, unstyled static blogging template
-          built with <Link
-            href="https://astro.build"
-            class="text-foreground"
-            external
-            underline>Astro</Link
-          >, <Link
-            href="https://tailwindcss.com"
-            class="text-foreground"
-            external
-            underline>Tailwind</Link
-          >, and <Link
-            href="https://ui.shadcn.com"
-            class="text-foreground"
-            external
-            underline>shadcn/ui</Link
-          >. Extraordinarily loosely based on the <Link
-            href="https://astro-micro.vercel.app/"
-            class="text-foreground"
-            external
-            underline>Astro Micro</Link
-          > theme.
-        </p>
-        <p class="text-muted-foreground text-sm">
-          To use this template, check out the <Link
-            href="https://github.com/jktrn/astro-erudite"
-            class="text-foreground"
-            underline
-            external>GitHub</Link
-          > repository. To learn more about why this template exists, read this blog
-          post: <Link
-            href="/blog/the-state-of-static-blogs"
-            class="text-foreground"
-            underline>The State of Static Blogs in 2024</Link
-          >.
-        </p>
+      <div class="pl-5 ">
+        <div class="flex flex-col space-y-1.5 p-6 pb-4 pt-15">
+          <h3 class="text-4xl leading-none font-medium">Aaron Wu</h3>
+          <p class="text-muted-foreground text-md">
+            [ air-uhn woo, ar- ] &bull; <span class="font-medium">NOUN</span>
+             <!-- SOFTWARE ENGINEER -->
+          </p>
+        </div>
+        <div class="p-6 pt-0 space-y-2">
+          <!-- <p class="text-muted-foreground mb-2 text-sm">
+            astro-erudite is an opinionated, unstyled static blogging template
+            built with <Link
+              href="https://astro.build"
+              class="text-foreground"
+              external
+              underline>Astro</Link
+            >, <Link
+              href="https://tailwindcss.com"
+              class="text-foreground"
+              external
+              underline>Tailwind</Link
+            >, and <Link
+              href="https://ui.shadcn.com"
+              class="text-foreground"
+              external
+              underline>shadcn/ui</Link
+            >. Extraordinarily loosely based on the <Link
+              href="https://astro-micro.vercel.app/"
+              class="text-foreground"
+              external
+              underline>Astro Micro</Link
+            > theme.
+          </p> -->
+          <p class="text-foreground text-md font-light ">
+            <!-- To use this template, check out the <Link
+              href="https://github.com/jktrn/astro-erudite"
+              class="text-foreground"
+              underline
+              external>GitHub</Link
+            > repository. To learn more about why this template exists, read this blog
+            post: <Link
+              href="/blog/the-state-of-static-blogs"
+              class="text-foreground"
+              underline>The State of Static Blogs in 2024</Link
+            >. -->
+            A passionate learner that dabbles in hardware, web development, programming, and anything that piques their interest!
+            
+          </p>
+          <p class="text-foreground text-md font-light ">
+            Based in <u><a href="https://www.google.com/search?q=San+Diego">San Diego</a></u> and <u><a href="https://www.google.com/search?q=Merced,California">Merced</a></u> and currently open to new opportunities and collaborations.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center justify-center w-full max-w-1/6">
+        <div class="flex flex-col justify-between space-y-10">
+          <ul class="flex flex-col gap-5 pt-15" role="list">
+            {
+              links.map(({ href, label }) => (
+                <li>
+                  <Link
+                    href={href}
+                    aria-label={label}
+                    title={label}
+                    class={buttonVariants({ variant: 'outline', size: 'icon' })}
+                    external
+                  >
+                    <Icon
+                      name={
+                        ICON_MAP[label as keyof typeof ICON_MAP] ||
+                        'lucide:message-circle-question'
+                      }
+                      class="size-4"
+                    />
+                  </Link>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
       </div>
     </div>
+
   </section>
-  <section class="flex flex-col gap-y-4">
+  <section class="flex flex-col gap-y-2">
     <h2 class="text-2xl font-medium">Latest posts</h2>
     <ul class="flex flex-col gap-y-4">
       {

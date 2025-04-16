@@ -7,16 +7,21 @@ import Head from '@/components/Head.astro'
 import Header from '@/components/Header.astro'
 import { SITE } from '@/consts'
 import { cn } from '@/lib/utils'
-
+import CustomCursor from '../components/Cursor.astro';
+import {ClientRouter} from 'astro:transitions';
 const { isWide = false } = Astro.props
 ---
 
 <!doctype html>
 <html lang={SITE.locale}>
+  
   <Head>
     <slot name="head" />
+    
+    <ClientRouter/>
   </Head>
   <body>
+    <CustomCursor />
     <div class="flex h-fit min-h-screen flex-col gap-y-6 font-sans">
       <Header />
       <main class="grow">
