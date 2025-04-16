@@ -18,8 +18,8 @@ export const NAV_LINKS: SocialLink[] = [
   //   label: 'authors',
   // },
   {
-    href: '/about',
-    label: 'about',
+    href: '/work',
+    label: 'work',
   },
   {
     href: '/projects',
