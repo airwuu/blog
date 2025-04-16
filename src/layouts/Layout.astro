@@ -17,10 +17,9 @@ const { isWide = false } = Astro.props
   
   <Head>
     <slot name="head" />
-    
     <ClientRouter/>
   </Head>
-  <body>
+  <body class="noise">
     <CustomCursor />
     <div class="flex h-fit min-h-screen flex-col gap-y-6 font-sans">
       <Header />
