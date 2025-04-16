@@ -26,7 +26,7 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
   <section>
     <div class="rounded-lg border flex">
       <div class="flex flex-col space-y-1.5">
-        <div class="w-full h-full overflow-hidden translate-x-0.5">
+        <div class="w-full h-full translate-x-0.5 md:block hidden">
           <Image
           src="/boycat.png"
           alt="boy"
@@ -36,7 +36,7 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
           />
         </div>
       </div>
-      <div class="pl-5 ">
+      <div class="pl-9 ">
         <div class="flex flex-col space-y-1.5 p-6 pb-4 pt-15">
           <h3 class="text-4xl leading-none font-medium">Aaron Wu</h3>
           <p class="text-muted-foreground text-md">
@@ -45,42 +45,7 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
           </p>
         </div>
         <div class="p-6 pt-0 space-y-2">
-          <!-- <p class="text-muted-foreground mb-2 text-sm">
-            astro-erudite is an opinionated, unstyled static blogging template
-            built with <Link
-              href="https://astro.build"
-              class="text-foreground"
-              external
-              underline>Astro</Link
-            >, <Link
-              href="https://tailwindcss.com"
-              class="text-foreground"
-              external
-              underline>Tailwind</Link
-            >, and <Link
-              href="https://ui.shadcn.com"
-              class="text-foreground"
-              external
-              underline>shadcn/ui</Link
-            >. Extraordinarily loosely based on the <Link
-              href="https://astro-micro.vercel.app/"
-              class="text-foreground"
-              external
-              underline>Astro Micro</Link
-            > theme.
-          </p> -->
           <p class="text-foreground text-md font-light ">
-            <!-- To use this template, check out the <Link
-              href="https://github.com/jktrn/astro-erudite"
-              class="text-foreground"
-              underline
-              external>GitHub</Link
-            > repository. To learn more about why this template exists, read this blog
-            post: <Link
-              href="/blog/the-state-of-static-blogs"
-              class="text-foreground"
-              underline>The State of Static Blogs in 2024</Link
-            >. -->
             A passionate learner that dabbles in hardware, web development, programming, and anything that piques their interest!
             
           </p>
@@ -94,12 +59,12 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
           <ul class="flex flex-col gap-5 pt-15" role="list">
             {
               links.map(({ href, label }) => (
-                <li>
+                <li class="hover:bg-secondary rounded-md transition transition-duration-300 ease-in-out">
                   <Link
                     href={href}
                     aria-label={label}
                     title={label}
-                    class={buttonVariants({ variant: 'outline', size: 'icon' })}
+                    class={buttonVariants({ variant: 'ghost', size: 'icon' })}
                     external
                   >
                     <Icon

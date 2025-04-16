@@ -83,6 +83,21 @@
 </style>
 
 <script>
+  // Add type declaration for window.cursorState
+  declare global {
+    interface Window {
+      cursorState: {
+        mouseX: number;
+        mouseY: number;
+        outerX: number;
+        outerY: number;
+        isVisible: boolean;
+        isHovering: boolean;
+        animationFrameId: number | null;
+      };
+    }
+  }
+
   if (typeof window !== 'undefined') {
     if (!window.cursorState) {
       window.cursorState = {
@@ -122,7 +137,7 @@
       }
 
 
-      const handleMouseMove = (e) => {
+      const handleMouseMove = (e: { clientX: number; clientY: number; }) => {
         state.mouseX = e.clientX;
         state.mouseY = e.clientY;
   
@@ -140,7 +155,7 @@
         state.isVisible = false;
       };
   
-      const handleMouseEnter = (event) => {
+      const handleMouseEnter = (event: { clientX: number; clientY: number; }) => {
         state.mouseX = event.clientX;
         state.mouseY = event.clientY;
         state.outerX = state.mouseX; 
@@ -149,15 +164,30 @@
         state.isVisible = true;
       };
   
-      const handleMouseOver = (e) => {
-        if (e.target.closest && e.target.closest(interactiveElements)) {
+      // const handleMouseOver = (e: { target: { closest: (arg0: string) => any; }; }) => {
+      //   if (e.target.closest && e.target.closest(interactiveElements)) {
+      //     cursorContainer.classList.add('hover');
+      //     state.isHovering = true;
+      //   }
+      // };
+  
+      // const handleMouseOut = (e: { target: { closest: (arg0: string) => any; }; }) => {
+      //   if (e.target.closest && e.target.closest(interactiveElements)) {
+      //     cursorContainer.classList.remove('hover');
+      //     state.isHovering = false;
+      //   }
+      // };
+      const handleMouseOver = (e: MouseEvent) => {
+        const target = e.target as Element;
+        if (target.closest && target.closest(interactiveElements)) {
           cursorContainer.classList.add('hover');
           state.isHovering = true;
         }
       };
-  
-      const handleMouseOut = (e) => {
-        if (e.target.closest && e.target.closest(interactiveElements)) {
+
+      const handleMouseOut = (e: MouseEvent) => {
+        const target = e.target as Element;
+        if (target.closest && target.closest(interactiveElements)) {
           cursorContainer.classList.remove('hover');
           state.isHovering = false;
         }
