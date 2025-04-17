@@ -25,14 +25,14 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
   <PageHead slot="head" title="Home" />
   <section>
     <div class="rounded-lg border flex">
-      <div class="flex flex-col space-y-1.5">
-        <div class="w-full h-full translate-x-10 md:block hidden">
+      <div class="flex flex-col  space-y-1.5">
+        <div class="w-full h-full md:block hidden ">
           <Image
           src="/boycat.png"
           alt="boy"
           width={1200}
-          height={530}
-          class=" w-full h-full object-cover noise"
+          height={630}
+          class=" w-full h-full object-cover noise translate-x-10 overflow-visible"
           />
         </div>
       </div>
