@@ -2,7 +2,7 @@
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
-import ProjectCard from '@/components/ProjectCard.astro'
+// import ProjectCard from '@/components/ProjectCard.astro'
 import Layout from '@/layouts/Layout.astro'
 import { getAllProjects } from '@/lib/data-utils'
 import {AnimatedHeading, AnimatedText} from '@/components/ui/animated-text';
@@ -20,10 +20,10 @@ const tagColors = {
   aws: "bg-secondary/20 text-[#f5c2e7]",
   vue: "bg-secondary/20 text-[#94e2d5]",
   database: "bg-secondary/20 text-[#cba6f7]",
-  python: "bg-secondary/20 ",
+  python: "bg-secondary/50 ",
   firebase: "bg-secondary/20 text-[#f38ba8]",
   mongo: "bg-secondary/20 text-[#74c7ec]",
-  default: "bg-secondary/20 text",
+  default: "bg-secondary/50 text",
 };
 
 // Helper function to get skill color - remains the same
@@ -125,8 +125,11 @@ const educationFadeInUp = (index: number) => ({
     transition: { delay: index * 0.1, duration: 0.4 },
     viewport: { once: true, amount: 0.2 }
 });
+const { page } = Astro.props
 ---
 <Layout>
+  <PageHead slot="head" title="Work" />
+  <Breadcrumbs items={[{ label: 'Work', icon: 'lucide:briefcase' }]} />
   <div class="container px-4 py-10 mx-auto max-w-5xl">
     <div class="mb-12 text-center">
       <AnimatedHeading
@@ -181,7 +184,7 @@ const educationFadeInUp = (index: number) => ({
                   viewport={{ once: true, amount: 0.2 }}
                 >
                   {/* Card component might also be a React component if TiltCard requires it */}
-                    <Card className="bg-primary-foreground/30 backdrop-blur-sm border-white/5 overflow-hidden">
+                    <Card className="bg-primary-foreground/50 backdrop-blur-sm border-white/5 overflow-hidden">
                       <CardHeader className="pb-2">
                         <CardTitle className="text-secondary">{exp.title}</CardTitle>
                         <CardDescription className="text-base font-medium text-muted-foreground">
@@ -243,7 +246,7 @@ const educationFadeInUp = (index: number) => ({
           whileInView={fadeInUp.visible(education.indexOf(edu))}
           viewport={{ once: true, amount: 0.2 }}
         >
-          <Card className="h-full bg-primary-foreground/30 backdrop-blur-sm border-white/5">
+          <Card className="h-full bg-primary-foreground/50 backdrop-blur-sm border-white/5">
             <CardHeader>
               <CardTitle className="text-lg text-secondary">{edu.degree}</CardTitle>
               <CardDescription className="text-base font-medium">

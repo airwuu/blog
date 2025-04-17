@@ -4,11 +4,11 @@ export const SITE: Site = {
   title: 'airwu.dev',
   description:
     'personal website',
-  href: 'https://astro-erudite.vercel.app',
+  href: 'https://airwu.dev',
   author: 'airwu',
   locale: 'en-US',
   featuredPostCount: 2,
-  postsPerPage: 3,
+  postsPerPage: 4,
 }
 
 export const NAV_LINKS: SocialLink[] = [
@@ -41,7 +41,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   //   label: 'Twitter',
   // },
   {
-    href: 'mailto:jason@enscribe.dev',
+    href: 'mailto:wu@ucmerced.edu',
     label: 'Email',
   },
   {
