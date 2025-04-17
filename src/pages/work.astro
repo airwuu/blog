@@ -5,51 +5,260 @@ import PageHead from '@/components/PageHead.astro'
 import ProjectCard from '@/components/ProjectCard.astro'
 import Layout from '@/layouts/Layout.astro'
 import { getAllProjects } from '@/lib/data-utils'
+import {AnimatedHeading, AnimatedText} from '@/components/ui/animated-text';
+import {TiltCard} from '@/components/ui/tilt-card';
+import {Card, CardHeader, CardTitle, CardDescription, CardContent} from '@/components/ui/card.jsx';
 
-const projects = await getAllProjects()
+
+// const projects = await getAllProjects()
+// Color mapping for skills - remains the same
+const tagColors = {
+  react: "bg-secondary/20 text-[#89b4fa]",
+  typescript: "bg-secondary/20 text-[#74c7ec]",
+  javascript: "bg-secondary/20 text-[#f9e2af]",
+  node: "bg-secondary/20 text-[#a6e3a1]",
+  aws: "bg-secondary/20 text-[#f5c2e7]",
+  vue: "bg-secondary/20 text-[#94e2d5]",
+  database: "bg-secondary/20 text-[#cba6f7]",
+  python: "bg-secondary/20 ",
+  firebase: "bg-secondary/20 text-[#f38ba8]",
+  mongo: "bg-secondary/20 text-[#74c7ec]",
+  default: "bg-secondary/20 text",
+};
+
+// Helper function to get skill color - remains the same
+const getSkillColor = (skill: string): string => {
+  const lowerSkill = skill.toLowerCase();
+  if (lowerSkill.includes("react")) return tagColors.react;
+  if (lowerSkill.includes("typescript")) return tagColors.typescript;
+  if (lowerSkill.includes("javascript") || lowerSkill.includes("jquery"))
+    return tagColors.javascript;
+  if (lowerSkill.includes("node") || lowerSkill.includes("express"))
+    return tagColors.node;
+  if (lowerSkill.includes("aws") || lowerSkill.includes("cloud"))
+    return tagColors.aws;
+  if (lowerSkill.includes("vue")) return tagColors.vue;
+  if (
+    lowerSkill.includes("mongo") ||
+    lowerSkill.includes("sql") ||
+    lowerSkill.includes("db")
+  )
+    return tagColors.database;
+    if (lowerSkill.includes("python")) return tagColors.python;
+    if (lowerSkill.includes("firebase")) return tagColors.firebase;
+    if (lowerSkill.includes("mongo")) return tagColors.mongo;
+
+  return tagColors.default;
+};
+
+// Experience data - remains the same
+const experiences = [
+  {
+    id: 1,
+    title: "CSE Tutor",
+    company: "UC Merced - STEM Tutoring Hub",
+    period: "2025 - Present",
+    description:
+      "Providing guidance to students in computer science topics, including programming, algorithms, and debugging.",
+    skills: ["C", "C++", "Python", "Teaching", "Other"],
+    highlights: [
+      "Taught students about data structures and coding principles",
+      "Explained important mathematical concepts for programming",
+    ],
+  },
+  {
+    id: 2,
+    title: "Machine Learning Intern",
+    company: "Wilsilica - Lumos Control",
+    period: "2021 - 2022",
+    description:
+      "Developed prototypes for applications of human detection on smart lighting control, focusing on ML training for TinyML/EdgeTPU.",
+    skills: ["Python", "Tensorflow", "Google Coral", "ML", "SSH"],
+    highlights: [
+      "Implemented 2 lighting control demos for company at local San Diego trade show",
+      "Expanded on lighting control designs by combining a mix of location and gesture based controls",
+      "Designed and trained convolutional neural networks for human detection and body segmentation",
+    ],
+  },
+  // Add more experiences if needed
+];
+
+// Education data - remains the same
+const education = [
+  {
+    id: 1,
+    degree: "B.S. Computer Science and Engineering",
+    institution: "University of California, Merced",
+    period: "2023 - Present",
+    description: "Currently learning more about computers...",
+  },
+  {
+    id: 2,
+    degree: "High School Diploma",
+    institution: "Canyon Crest Academy",
+    period: "2019 - 2023",
+    description: "Shoutout to CCA! This place was amazing!",
+  },
+];
+
+// Framer Motion variants often need to be handled *within* the client component
+// or passed as props if the component is designed to accept them.
+// For simplicity, we assume the components below handle their animations internally
+// based on props or their own definitions. The `client:visible` directive ensures
+// their JS loads and the animations run when they enter the viewport.
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.07,
+      duration: 0.4,
+      ease: "easeOut",
+    },
+  }),
+};
+
+const educationFadeInUp = (index: number) => ({
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    transition: { delay: index * 0.1, duration: 0.4 },
+    viewport: { once: true, amount: 0.2 }
+});
 ---
-
 <Layout>
-  <PageHead slot="head" title="About" />
-  <Breadcrumbs items={[{ label: 'About', icon: 'lucide:info' }]} />
+  <div class="container px-4 py-10 mx-auto max-w-5xl">
+    <div class="mb-12 text-center">
+      <AnimatedHeading
+        client:visible={{ rootMargin: "50px" }}
+        text="Work Experience"
+        className="text-4xl md:text-5xl lg:text-6xl mb-3"
+      />
+      <AnimatedText
+        client:visible={{ rootMargin: "50px" }}
+        text="A journey through my professional career"
+        className="text-xl text-muted-foreground"
+        type="words"
+        animationVariant="fade"
+        delay={0.2}
+      />
+    </div>
 
-  <section>
-    <div class="min-w-full">
-      <div class="prose mb-8">
-        <p class="mb-4">
-          astro-erudite is an opinionated, unstyled static blogging template
-          that prioritizes simplicity and performance, built with <Link
-            href="https://astro.build"
-            class="text-foreground"
-            external
-            underline>Astro</Link
-          >, <Link
-            href="https://tailwindcss.com"
-            class="text-foreground"
-            external
-            underline>Tailwind</Link
-          >, and <Link
-            href="https://ui.shadcn.com"
-            class="text-foreground"
-            external
-            underline>shadcn/ui</Link
-          >. It provides a clean foundation for your content while being
-          extremely easy to customize.
-        </p>
-        <p>
-          To learn more about the philosophy behind this template, check out the
-          following blog post: <Link
-            href="/blog/the-state-of-static-blogs"
-            class="text-foreground"
-            underline>The State of Static Blogs in 2024</Link
-          >.
-        </p>
-      </div>
+    <div class="relative mb-20">
+      <div class="absolute left-0 md:left-1/2 h-full w-px bg-gradient-to-b from-foreground/90 via-foreground/70 to-transparent transform md:-translate-x-1/2"></div>
 
-      <h2 class="mb-4 text-2xl font-medium">Example Projects Listing</h2>
-      <div class="flex flex-col gap-4">
-        {projects.map((project) => <ProjectCard project={project} />)}
-      </div>
-    </div>
-  </section>
+      <div class="relative space-y-10">
+        {experiences.map((exp, index) => (
+          <div class:list={[
+              "relative flex flex-col md:flex-row items-start md:items-center",
+              index % 2 === 0 ? "pl-5 md:pl-0 md:flex-row-reverse" : "pl-5 md:pl-0" // Adjusted padding for consistency
+            ]}>
+              {/* Timeline Dot - Simple div, could be animated with JS/CSS if needed */}
+              <div class="absolute left-0 md:left-1/2 w-3 h-3 rounded-full bg-foreground transform -translate-x-1/2 md:-translate-x-1/2 z-10 mt-1 md:mt-0"></div>
+
+              {/* Period Section */}
+              <div class:list={[
+                  "absolute left-6 top-0 md:static font-extrabold md:flex-1 mb-3 md:mb-0 md:px-6",
+                    "-translate-y-7 md:translate-y-0", // Positioning adjustment
+                  index % 2 === 0 ? "md:text-left" : "md:text-right"
+                ]}>
+                <div class="text-foreground font-mono text-sm md:text-base">
+                  {exp.period}
+                </div>
+              </div>
+
+              {/* Experience Card Section */}
+              <div class="w-full pl-8 md:pl-5 md:w-1/2 md:max-w-md md:px-6 ">
+                {/* TiltCard needs client-side JS for interactivity and potentially animation */}
+                  <TiltCard
+                  client:visible={{ rootMargin: "50px" }}
+                  tiltStrength={4}
+                  glareOpacity={0.08}
+                  glareColor="rgb(102, 132, 98, 0.8)"
+                  borderGlow={true}
+                  initial={fadeInUp.hidden}
+                  whileInView={fadeInUp.visible(index)}
+                  viewport={{ once: true, amount: 0.2 }}
+                >
+                  {/* Card component might also be a React component if TiltCard requires it */}
+                    <Card className="bg-primary-foreground/30 backdrop-blur-sm border-white/5 overflow-hidden">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-secondary">{exp.title}</CardTitle>
+                        <CardDescription className="text-base font-medium text-muted-foreground">
+                          {exp.company}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <p class="mb-4">{exp.description}</p>
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+                          {exp.skills.map((skill) => (
+                            <span
+
+                              class:list={[
+                                "px-2 py-1 text-xs rounded-full",
+                                getSkillColor(skill) // Use the helper function
+                              ]}
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div class="space-y-2">
+                          <h4 class="font-medium">Key Achievements</h4>
+                          <ul class="space-y-1 list-disc list-outside pl-5 text-sm text-muted-foreground">
+                            {exp.highlights.map((highlight, i) => (
+                              <li >{highlight}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TiltCard>
+              </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="mb-10 text-center">
+      <AnimatedHeading
+        client:visible={{ rootMargin: "50px" }}
+        text="Education"
+        className="text-3xl md:text-4xl mb-10"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      {education.map((edu) => (
+        <TiltCard
+          client:visible={{ rootMargin: "50px" }}
+          tiltStrength={3}
+          glareOpacity={0.08}
+          glareColor="rgb(102, 132, 98, 0.8)"
+          borderGlow={true}
+
+          initial={fadeInUp.hidden}
+          whileInView={fadeInUp.visible(education.indexOf(edu))}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <Card className="h-full bg-primary-foreground/30 backdrop-blur-sm border-white/5">
+            <CardHeader>
+              <CardTitle className="text-lg text-secondary">{edu.degree}</CardTitle>
+              <CardDescription className="text-base font-medium">
+                {edu.institution}
+              </CardDescription>
+              <div class="text-sm text-muted-foreground">
+                {edu.period}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p>{edu.description}</p>
+            </CardContent>
+          </Card>
+        </TiltCard>
+      ))}
+    </div>
+  </div>
 </Layout>
