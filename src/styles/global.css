@@ -110,7 +110,6 @@
 }
 .noise {
   position: relative;
-  background-image: url('../../public/noise.png');
 }
 
 .noise::before {
@@ -121,9 +120,8 @@
   width: 100%;
   height: 100%;
   background-color: transparent;
-  opacity: 0.1;
+  opacity: 0.8;
   pointer-events: none;
   z-index: -1;
-  /* filter: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch"/></filter></svg>#noise'); */
-  /* 1background-image: url('../../public/noise.png'); */
+  background-image: url('/noise.png');
 }
