@@ -4,7 +4,7 @@ export const SITE: Site = {
   title: 'airwu.dev',
   description:
     'personal website',
-  href: 'https://airwu.dev',
+  href: 'http://mlhportfolio-aaron.duckdns.org:5000',
   author: 'airwu',
   locale: 'en-US',
   featuredPostCount: 2,
