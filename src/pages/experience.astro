@@ -40,7 +40,6 @@ const getSkillColor = (skill: string): string => {
   if (lowerSkill.includes("vue")) return tagColors.vue;
   if (
     lowerSkill.includes("mongo") ||
-    lowerSkill.includes("sql") ||
     lowerSkill.includes("db")
   )
     return tagColors.database;
@@ -55,11 +54,24 @@ const getSkillColor = (skill: string): string => {
 const experiences = [
   {
     id: 1,
-    title: "CSE Tutor",
+    title: "Production Engineering MLH Fellow",
+    company: "Meta | Major League Hacking Fellowship ",
+    period: "2025 - Present",
+    description:
+      "Created and applied DevOps tooling, Software Testing, CI/CD pipelines, and monitoring/debugging on production systems",
+    skills: ["Python", "Bash", "SQL", "SSH"],
+    highlights: [
+      "Met a lot of cool people and learned a lot from them!",
+      "Created a live portfolio website and maintained it throughout the program",
+    ],
+  },
+  {
+    id: 2,
+    title: "CS Tutor",
     company: "UC Merced - STEM Tutoring Hub",
     period: "2025 - Present",
     description:
-      "Providing guidance to students in computer science topics, including programming, algorithms, and debugging.",
+      "Provided guidance to students in computer science topics, including programming, algorithms, and debugging.",
     skills: ["C", "C++", "Python", "Teaching", "Other"],
     highlights: [
       "Taught students about data structures and coding principles",
@@ -67,7 +79,7 @@ const experiences = [
     ],
   },
   {
-    id: 2,
+    id: 3,
     title: "Machine Learning Intern",
     company: "Wilsilica - Lumos Control",
     period: "2021 - 2022",
@@ -80,6 +92,7 @@ const experiences = [
       "Designed and trained convolutional neural networks for human detection and body segmentation",
     ],
   },
+  
   // Add more experiences if needed
 ];
 
@@ -113,7 +126,7 @@ const fadeInUp = {
     y: 0,
     transition: {
       delay: i * 0.07,
-      duration: 0.4,
+      duration: 0.1,
       ease: "easeOut",
     },
   }),
@@ -128,18 +141,18 @@ const educationFadeInUp = (index: number) => ({
 const { page } = Astro.props
 ---
 <Layout>
-  <PageHead slot="head" title="Work" />
-  <Breadcrumbs items={[{ label: 'Work', icon: 'lucide:briefcase' }]} />
+  <PageHead slot="head" title="Experiences" />
+  <Breadcrumbs items={[{ label: 'Experiences', icon: 'lucide:briefcase' }]} />
   <div class="container px-4 py-10 mx-auto max-w-5xl">
     <div class="mb-12 text-center">
       <AnimatedHeading
         client:visible={{ rootMargin: "50px" }}
-        text="Work Experience"
+        text="My Experiences"
         className="text-4xl md:text-5xl lg:text-6xl mb-3"
       />
       <AnimatedText
         client:visible={{ rootMargin: "50px" }}
-        text="A journey through my professional career"
+        text="A timeline of some of my most impactful experiences"
         className="text-xl text-muted-foreground"
         type="words"
         animationVariant="fade"

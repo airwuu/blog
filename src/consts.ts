@@ -4,7 +4,7 @@ export const SITE: Site = {
   title: 'airwu.dev',
   description:
     'personal website',
-  href: 'https://airwu.dev',
+  href: 'http://mlhportfolio-aaron.duckdns.org:5000',
   author: 'airwu',
   locale: 'en-US',
   featuredPostCount: 2,
@@ -18,16 +18,20 @@ export const NAV_LINKS: SocialLink[] = [
   //   label: 'authors',
   // },
   {
-    href: '/work',
-    label: 'work',
-  },
-  {
-    href: '/projects',
-    label: 'projects',
+    href: '/experience',
+    label: 'experience',
   },
   {
     href: '/blog',
     label: 'blog',
+  },
+  {
+    href: '/hobbies',
+    label: 'hobbies',
+  },  
+  {
+    href: '/timeline',
+    label: 'timeline',
   },
 ]
 
@@ -41,7 +45,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   //   label: 'Twitter',
   // },
   {
-    href: 'mailto:wu@ucmerced.edu',
+    href: 'mailto:awu0103@gmail.com',
     label: 'Email',
   },
   {
