@@ -18,16 +18,20 @@ export const NAV_LINKS: SocialLink[] = [
   //   label: 'authors',
   // },
   {
-    href: '/work',
-    label: 'work',
+    href: '/experience',
+    label: 'experience',
   },
   {
-    href: '/projects',
-    label: 'projects',
+    href: '/hobbies',
+    label: 'hobbies',
   },
   {
     href: '/blog',
     label: 'blog',
+  },
+  {
+    href: '/timeline',
+    label: 'timeline',
   },
 ]
 
@@ -41,7 +45,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   //   label: 'Twitter',
   // },
   {
-    href: 'mailto:wu@ucmerced.edu',
+    href: 'mailto:awu0103@gmail.com',
     label: 'Email',
   },
   {
