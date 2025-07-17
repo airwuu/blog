@@ -22,13 +22,13 @@ export const NAV_LINKS: SocialLink[] = [
     label: 'experience',
   },
   {
-    href: '/hobbies',
-    label: 'hobbies',
-  },
-  {
     href: '/blog',
     label: 'blog',
   },
+  {
+    href: '/hobbies',
+    label: 'hobbies',
+  },  
   {
     href: '/timeline',
     label: 'timeline',
