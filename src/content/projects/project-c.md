@@ -1,8 +1,8 @@
 ---
-name: 'Project C'
-description: 'This is an example project description! You should replace this with a description of your own project.'
-tags: ['Framework A', 'Library B', 'Tool C', 'Resource D']
-image: '../../../public/static/1200x630.png'
-link: 'https://example.com'
-startDate: '2024-03-01'
+name: 'Gaming'
+description: 'Currently I am working through the following: Baulders Gate 3, The Last of Us Part 2 Remastered, Detroit, Core Keeper'
+tags: ['Gaming', 'RPGs']
+image: 'https://store.fastly.steamstatic.com/public/shared/images/responsive/steam_share_image.jpg'
+link: 'https://steamcommunity.com/profiles/76561198414954152/'
+startDate: '2012-07-04'
 ---

@@ -33,6 +33,10 @@ export const NAV_LINKS: SocialLink[] = [
     href: '/timeline',
     label: 'timeline',
   },
+  {
+    href: '/travels',
+    label: 'travels',
+  },
 ]
 
 export const SOCIAL_LINKS: SocialLink[] = [
