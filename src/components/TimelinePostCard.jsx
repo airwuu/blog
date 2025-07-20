@@ -1,9 +1,8 @@
 import React from 'react';
-import md5 from 'js-md5'; // A client-side library for MD5 hashing.
-import AvatarComponent from '@/components/ui/avatar'; // Assuming this is a React component
-import { cn } from '@/lib/utils'; // Assuming this is a React-compatible utility
+import md5 from 'js-md5'; 
+import AvatarComponent from '@/components/ui/avatar';
+import { cn } from '@/lib/utils'; 
 
-// This function now uses a browser-compatible MD5 library.
 function createGravatarUrl(email) {
   if (!email) return '';
   const lowerCaseEmail = email.trim().toLowerCase();
