@@ -75,7 +75,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     server: {
-      host: true,
+      allowedHosts: ['astro'],
       watch: {
         usePolling: true,
       },
