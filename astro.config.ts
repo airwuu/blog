@@ -74,6 +74,17 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      host: true,
+      watch: {
+        usePolling: true,
+      },
+      hmr: {
+        protocol: 'ws',
+        host: 'localhost',
+        port: 4321,
+      }
+    },
   },
   server: {
     port: 1234,
