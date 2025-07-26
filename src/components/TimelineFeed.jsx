@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TimelinePostCard } from './TimelinePostCard';
 
-const API_URL = 'http://mlhportfolio-aaron.duckdns.org:5000/api/timeline_post';
+const API_URL = '/api/timeline_post';
 
 export function TimelineFeed() {
   const [posts, setPosts] = useState([]);
