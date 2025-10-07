@@ -54,15 +54,15 @@ const getSkillColor = (skill: string): string => {
 const experiences = [
   {
     id: 1,
-    title: "Production Engineering MLH Fellow",
-    company: "Meta | Major League Hacking Fellowship ",
-    period: "2025 - Present",
+    title: "PE Fellow",
+    company: "Meta & Major League Hacking Fellowship ",
+    period: "2025",
     description:
-      "Created and applied DevOps tooling, Software Testing, CI/CD pipelines, and monitoring/debugging on production systems",
-    skills: ["Python", "Bash", "SQL", "SSH"],
+      "Practiced Production Engineering topics such as Automation, SWE, Observability, and Testing on production services",
+    skills: ["Python", "Bash", "SQL", "Prometheus", "Grafana", "CI/CD", "Linux Knowledge"],
     highlights: [
-      "Met a lot of cool people and learned a lot from them!",
-      "Created a live portfolio website and maintained it throughout the program",
+      "Met a lot of cool people and learned a lot from them! Thanks for the book recs!",
+      "Created live services on a VPS and maintained them throughout the program",
     ],
   },
   {
@@ -82,7 +82,7 @@ const experiences = [
     id: 3,
     title: "Machine Learning Intern",
     company: "Wilsilica - Lumos Control",
-    period: "2021 - 2022",
+    period: "2022 - 2023",
     description:
       "Developed prototypes for applications of human detection on smart lighting control, focusing on ML training for TinyML/EdgeTPU.",
     skills: ["Python", "Tensorflow", "Google Coral", "ML", "SSH"],
@@ -103,14 +103,14 @@ const education = [
     degree: "B.S. Computer Science and Engineering",
     institution: "University of California, Merced",
     period: "2023 - Present",
-    description: "Currently learning more about computers...",
+    description: "Unexpectedly, there's more than just cows and farmland here.",
   },
   {
     id: 2,
-    degree: "High School Diploma",
+    degree: "Your Typical Boring High School Diploma",
     institution: "Canyon Crest Academy",
     period: "2019 - 2023",
-    description: "Shoutout to CCA! This place was amazing!",
+    description: "Go Ravens! Definitely learned so so much here. ",
   },
 ];
 
@@ -135,7 +135,7 @@ const fadeInUp = {
 const educationFadeInUp = (index: number) => ({
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
-    transition: { delay: index * 0.1, duration: 0.4 },
+    transition: { delay: index * 0.1, duration: 0.1 },
     viewport: { once: true, amount: 0.2 }
 });
 const { page } = Astro.props
@@ -145,19 +145,12 @@ const { page } = Astro.props
   <Breadcrumbs items={[{ label: 'Experiences', icon: 'lucide:briefcase' }]} />
   <div class="container px-4 py-10 mx-auto max-w-5xl">
     <div class="mb-12 text-center">
-      <AnimatedHeading
-        client:visible={{ rootMargin: "50px" }}
-        text="My Experiences"
-        className="text-4xl md:text-5xl lg:text-6xl mb-3"
-      />
-      <AnimatedText
-        client:visible={{ rootMargin: "50px" }}
-        text="A timeline of some of my most impactful experiences"
-        className="text-xl text-muted-foreground"
-        type="words"
-        animationVariant="fade"
-        delay={0.2}
-      />
+      <div class="text-4xl md:text-5xl lg:text-6xl mb-3">
+        My Experiences
+      </div>
+      <div class="text-xl text-muted-foreground">
+        some relevant things i've done
+      </div> 
     </div>
 
     <div class="relative mb-20">
@@ -239,11 +232,9 @@ const { page } = Astro.props
     </div>
 
     <div class="mb-10 text-center">
-      <AnimatedHeading
-        client:visible={{ rootMargin: "50px" }}
-        text="Education"
-        className="text-3xl md:text-4xl mb-10"
-      />
+      <div class="text-3xl md:text-4xl mb-10">
+        Education
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">

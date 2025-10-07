@@ -25,18 +25,18 @@ export const NAV_LINKS: SocialLink[] = [
     href: '/blog',
     label: 'blog',
   },
-  {
-    href: '/hobbies',
-    label: 'hobbies',
-  },  
-  {
-    href: '/timeline',
-    label: 'timeline',
-  },
-  {
-    href: '/travels',
-    label: 'travels',
-  },
+  // {
+  //   href: '/hobbies',
+  //   label: 'hobbies',
+  // },  
+  // {
+  //   href: '/timeline',
+  //   label: 'timeline',
+  // },
+  // {
+  //   href: '/travels',
+  //   label: 'travels',
+  // },
 ]
 
 export const SOCIAL_LINKS: SocialLink[] = [
