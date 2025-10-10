@@ -1,5 +1,5 @@
 ---
-title: 'Framework 13: One year later'
+title: 'Framework 13: One Year Review'
 description: 'I bought a Framework 13 about one year ago. Heres my thoughts'
 date: 2025-07-15
 tags: ['thoughts','tech']
@@ -7,40 +7,153 @@ image: './w.jpg'
 authors: ['airwu']
 ---
 
-## So I bought a Framework 13 One Year Ago...
-Over this past year, I've been writing down my thoughts about the Framework 13 (amd 7640u, 32gb, 1tb) and how it stacks up against my past laptops.
+## The Review Format
+Please do use the _Table of Contents_ to quickly jump to any topics you are interested in. This review is formatted like an interview that covers various topics.
+I feel that the audience (you!) probably have considered Framework as an option, and these are probably questions you might have! I will be answering these questions from the perspective 
+of a Framework 13 user who daily drives NixOS. 
 
-For some context, I've owned a 2022 Zephyrus G14, some 16" Dell Gaming Laptop, and some other old laptops I played around with before this purchase. So, here were my thoughts over the past year!
+## Initial Impressions & Setup
+```md startLineNumber=1
+Which configuration did you get? Did you go for the DIY Edition or a pre-built model?
+```
+>My Framework 13 is configured with the AMD 7640u with all other parts bought elsewhere. It was cheaper to buy the DIY option and use my own SSD. 
+>Additionally, I splurged a bit and bought 32gb of DDR5 RAM, thinking that I would be compiling a lot of code and/or running VMs.
 
-## The Initial Purchase
-The Zephyrus G14 was pretty much my ideal laptop. A nice beautiful 14 inch form factor that's not too gamery, but somehow still packing a mobile GPU for all my gaming and CUDA needs. At the time, I recall it being the best "budget" option at the time. 
+```md startLineNumber=2
+How was the unboxing and initial setup process? If you got the DIY version, was it as simple and fun as they make it seem?
+```
+>The unboxing was great, it came in a very nicely packaged box (no plastics anywhere). Since I got the DIY version, I had to assemble the laptop components, which took me nearly 20 minutes. 
+>It was fun for me, but I don't imagine that it would be the same for someone else who doesn't take apart their laptop for fun. However, I would definitely recommend the DIY version for almost everyone.
 
-The only reason why I switched was because I had to RMA it... and then again.. and then I was finally out of the warranty period when I needed it fixed AGAIN. And unfortunately, a quick search online shows that I'm not the only one with persistent quality control issues.
+```md startLineNumber=3
+What were your immediate thoughts on the build quality, keyboard, and trackpad when you first got it?
+```
+>Immediately I fell in love with the form factor and aluminum chassis. It felt premium, although a bit more flexy than your average MacBook. The keyboard was great, 
+>but I was mostly focused on the trackpad as I was freshly coming from a Zephyrus G14 2022. The trackpad on that laptop is absolutely huge with this amazing glass texture on it, and unfortunately the Framework's trackpad paled in comparison. 
 
-So, when I was considering a new laptop that was actually functional for school use, I HEAVILY considered repairability and upgradability... which led me to either a used Thinkpad or the Framework laptops.
+## Performance & Daily Use
+```md startLineNumber=4
+What's your primary use case? (e.g., software development, school, general browsing, etc.)
+```
+>I use it for software development, school, and general browsing. Specifically, most of my schoolwork and browsing is on the browser, which isn't really laptop dependent. 
 
-## Initial Impressions
-The unboxing felt very green, there was nearly no plastic or styrofoam to be seen anywhere. I went with the DIY laptop kit and the assembly took maybe 5 minutes to install the ram, keyboard, and storage. Easy Peasy.
+>As for software development, having that 32gb of RAM is amazing. The screen is also 16:10, which gives you a bit more vertical space than your typical laptop. Although I haven't had a chance to try the new display yet,
+> I am quite interested in upgrading my display to a higher resolution and refresh rate just for the overall vibes when working on my laptop. 
 
-As for the laptop itself, the keyboard is fine (I found it to be a bit more mushy than I like, but it probably helps with the contact fatigue of typing all day on it), the 16:10 screen ratio is amazing for that extra vertical space (great when you use vertical tabs), and finally the chassis was definitely not as premium as a Macbook, but still a firm enough metal frame.  
+```md startLineNumber=5
+How has the performance held up after a year of software updates and general use? Have you noticed any slowdown?
+```
+>There have been no slowdowns, and if there was, it would've been my fault. I've upgraded the BIOS several times (which is trivially easy with the Framework docs). If anything, the software on the laptop has aged like wine. 
 
-I immediately spun up Fedora onto the laptop and set up my environment, and it was pretty much amazing to see it work out of the box. The fingerprint sensor, power profiles, and even the GUI for keyboard and screen brightness worked without me lifting a finger. How refreshing!
+>Recently, I've even received an email from Framework telling me to update the BIOS to the latest version that preserves the battery health on the 65Wh battery. While I do not have that specific battery, I still appreciated
+>the new experience of having the laptop manufacturer actually follow up with me and tell me to upgrade the firmware.
 
-At this point in time, I would've given Framework a solid 8/10 for the thought and effort put into the user experience of a new customer. 
+```md startLineNumber=6
+How has the physical hardware aged? I'm particularly interested in the hinge stiffness, any flex in the chassis, and how the finish has worn.
+```
+>By the time I ordered my Framework, the company had already iterated on and fixed several hot topic issues such as the hinge. For the most part, I have not noticed any changes as the hardware has aged. The finish looks the same as day 1.
 
-## 6 Months Later...
-Like most other unemployed Linux users, I decided to spend my unlimited amount of free time on distro hopping. In my infinite wisdom, I decided to try my hand at creating my own NixOS flake from the ground up alongside a blank Hyprland config. Once again, Framework triumphs as there were plenty of other Framework enthusiasts who had public dots and configs that I could learn (and even steal) from. 
+>However, there are two outstanding areas that is somewhat "damaged". Firstly, the magnetic bezel is my number 1 go-to fidget... and after hundreds of repetitions of peeling the bezel off and letting it snap back in place
+... it did eventually accrue some very minimal dents on the corners.
 
-When I eventually switched back to Arch, I found this to remain true as well. 
+>Most importantly, the second issue is that there are scratches all over my monitor, which began appearing when I started taking my laptop to school. This is because the chassis is flexible, and when you stuff
+> your laptop tightly into a backpack, the top panel will warp and press the monitor against the keyboard. Luckily, this damage is hard to notice when the monitor is on, and with the promise of upgradability, I am looking forward to swapping out the monitor one day.
 
-At some point during these 6 months, I also decided to install Windows onto a refurb Framework expansion slot that I bought. These are essentially USB drives, so I installed Windows-To-Go onto it so that I could take locked down university exams on it. It didn't work, so I ended up swapping Windows onto my main drive and Linux onto my expansion slot. Worked like a charm (and having completely separate drives is so much more pleasant than dual booting with partitions).
+```md startLineNumber=7
+What was your battery life like in the beginning, and what are you realistically getting now? 
+```
+> It's aight. Too many confounding factors to consider to make any general statements, but I get around 4-6 hours of battery life.
+```sh {"My current battery status":1-1000}  
+_
+❯ upower -i /org/freedesktop/UPower/devices/battery_BAT1
+  native-path:          BAT1
+  vendor:               NVT
+  model:                Framewo
+  serial:               0302
+  power supply:         yes
+  updated:              Thu 09 Oct 2025 05:52:34 PM PDT (14 seconds ago)
+  has history:          yes
+  has statistics:       yes
+  battery
+    present:             yes
+    rechargeable:        yes
+    state:               charging
+    warning-level:       none
+    energy:              26.3802 Wh
+    energy-empty:        0 Wh
+    energy-full:         49.5572 Wh
+    energy-full-design:  55.0088 Wh
+    energy-rate:         38.8388 W
+    voltage:             16.827 V
+    charge-cycles:       167
+    time to full:        35.8 minutes
+    percentage:          53%
+    capacity:            90.0896%
+    technology:          lithium-ion
+    icon-name:          'battery-good-charging-symbolic'
+  History (charge):
+    1760057554    53.000    charging
+    1760057524    52.000    charging
+    1760057464    51.000    charging
+```
 
-## The "Aura" of Owning Such a Cool Laptop
-No one cares if you own a Framework 13 or not. In fact, most people have never heard of it and will not even give it a second glance. I was tabling for a computer science related club one time and this guy comes up to me and said, "Hey nice Macbook". 
+```md startLineNumber=8
+How have the keyboard and trackpad been for long-term daily use? Any complaints or praise after thousands of hours of typing and scrolling?
+```
+>The keyboard is really weird. Somedays, it feels amazing to type on. My fingers fly across the keyboard, bouncing on each key before the next. On other days, it just felt mushy and sad. Regardless of the vibes of any given day, I was still able to type at my average speed on Monkeytype, roughly around 120wpm.
 
-However, when you get bored in class and you start peeling back the magnetic bezels, you will get questions (e.g. IS YOUR LAPTOP BROKEN?). Or, you might find yourself fortunate enough to be in the same room as someone who is desperately looking for some sort of dongle, and you can just remove one of the ports from your fancy modular laptop and hand it over to them. Congrats! You're about as cool as the other guy in the exact same room who has one of those 9-in-1 usb dongles! 
+>The trackpad is good as well. It is big and comfortable to use. My only complaint is that when you tilt the laptop in weird ways sometimes, it is hard to click with the trackpad. I have no idea why this happens and it is hard to reproduce.
 
-## One Year Later
-I still use this laptop and I still love it. Unfortunately, as I am a commuter and I squish this laptop into my bag nearly everyday, it now has some minor scratches on the screen. Normally, this would kind of be a big deal, but honestly I don't care because I want to upgrade my screen into the nice 2k one that doesn't require fractional scaling. Imagine that. Upgrading individual components on your laptop. 
+## The Framework Promise: Repair & Upgrades
+```md startLineNumber=9
+Have you actually taken advantage of the repairability or upgradability yet?
+```
+> No. Which is good, it means that this laptop is built to last. 
 
-This laptop is still very much just a laptop. You aren't buying some revolutionary product that will shake up the market. However, with my specs (amd 7640s/32gb/1tb) you should be expecting a pretty fast laptop (it can even handle Minecraft with moderate shaders) with around 6-8 hours of battery with my usual coding and web browsing. My 1 year rating remains an 8/10, and I would imagine that it would only go up when I do upgrade any parts or 3D print some nice customization parts for it. This laptop is great and I would recommend it to anyone who wants to have an "endgame" laptop.  
+```md startLineNumber=10
+Have you opened it up for any reason—to clean the fans, upgrade RAM/storage, or replace a part? How was that experience?
+```
+> I have had an issue where one of the ports stopped working. I opened up the laptop to reset the motherboard, which was less documented online than I expected. I guess that having so many different
+> potential motherboards for the same laptop would make it harder to document everything.
+
+```md startLineNumber=11
+How have you found the expansion card system? Is it a game-changer you use all the time, or more of a novelty?
+```
+> It's kind of a novelty, I rarely change the expansion cards. However, there are instances where I can reconfigure where my ports for ergonomic reasons.
+
+> I bought a refurb storage expansion card (250gb), and I actually daily drive this as my physical Linux partition. This is pretty cool as it is fast enough of a drive to not really have any problems.  
+
+## Misc Details
+```md startLineNumber=12
+What operating system are you running? Were there any challenges with drivers?
+```
+> I'm currently dual booting Windows and NixOS. There are no issues with drivers. I've also daily drove Fedora and Arch, which went great. Framework is amazing when it comes to Linux compatibility, something I cannot say the same for many of my past laptops.
+```md startLineNumber=13
+How are the thermals and fan noise? 
+```
+> I have my laptop set to battery saver mode at all times, so it has been very silent. Thermals stay low with my usual workload, but also can get a bit warm when gaming or something. I have never had to check for thermal throttling.
+
+```md startLineNumber=14
+Are there any weird quirks or persistent annoyances you've had to learn to live with?
+```
+> No, at least not hardware related. Most hardware issues I face are temporary and rare.
+
+```md startLineNumber=15
+How has your experience with Framework's customer support been, if you've had to use it?
+```
+> Never had to use it.
+
+## Final Comments
+```md startLineNumber=16
+Knowing everything you know now, if you were in the market for a laptop today, would you buy the Framework 13 again?
+```
+>Yes, I would definitely buy the Framework 13 again. The only real pain point is that I don't get MacBook levels of battery life (which I don't think is reasonable to expect from x84). 
+
+>I love talking about the fun quirks about this laptop to people, and it just feels premium and professional. Going back to the upgradability of this laptop, it is nice to have the peace of mind knowing that I can repair this laptop myself
+
+```md startLineNumber=17
+Who would you say this laptop is perfect for, and who should absolutely avoid it?
+```
+>This laptop is perfect for people searching for a "forever laptop". Additionally, it is great for people who love open source, care about the environment, and believe in the Framework mission. 
+
+>Also note that people whom I know use Framework laptops all seem to be technologically savvy, which is probably because they can appreciate the appeals of Framework.
