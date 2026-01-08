@@ -5,6 +5,7 @@ import '@/styles/typography.css'
 import Footer from '@/components/Footer.astro'
 import Head from '@/components/Head.astro'
 import Header from '@/components/Header.astro'
+import BackgroundWrapper from '@/components/BackgroundWrapper'
 import { SITE } from '@/consts'
 import { cn } from '@/lib/utils'
 import CustomCursor from '../components/Cursor.astro';
@@ -20,19 +21,21 @@ const { isWide = false } = Astro.props
     <ClientRouter/>
   </Head>
   <body class="noise">
-    <div class="flex h-fit min-h-screen flex-col gap-y-6 font-sans">
-      <Header />
-      <main class="grow">
-        <div
-          class={cn(
-            'mx-auto flex grow flex-col gap-y-6 px-4',
-            !isWide && 'max-w-3xl',
-          )}
-        >
-          <slot />
-        </div>
-      </main>
-      <Footer />
-    </div>
+    <BackgroundWrapper client:load>
+      <div class="relative z-10 flex h-fit min-h-screen flex-col gap-y-6 font-sans">
+        <Header />
+        <main class="grow">
+          <div
+            class={cn(
+              'mx-auto flex grow flex-col gap-y-6 px-4',
+              !isWide && 'max-w-3xl',
+            )}
+          >
+            <slot />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    </BackgroundWrapper>
   </body>
 </html>
