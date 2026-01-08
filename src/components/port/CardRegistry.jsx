@@ -4,6 +4,8 @@
 const cardRegistry = {
     cards: new Map(),
     listeners: new Set(),
+    mousePos: { x: 0, y: 0 },
+    hoveredCardIndex: -1,
 
     register(id, element) {
         if (element) {
@@ -35,6 +37,24 @@ const cardRegistry = {
         return bounds;
     },
 
+    updateMousePos(x, y) {
+        this.mousePos = { x, y };
+        // Check which card is hovered
+        const bounds = this.getCardBounds();
+        this.hoveredCardIndex = -1;
+        for (let i = 0; i < bounds.length; i++) {
+            const card = bounds[i];
+            if (x >= card.x && x <= card.right && y >= card.y && y <= card.bottom) {
+                this.hoveredCardIndex = i;
+                break;
+            }
+        }
+    },
+
+    getHoveredCardIndex() {
+        return this.hoveredCardIndex;
+    },
+
     subscribe(listener) {
         this.listeners.add(listener);
         return () => this.listeners.delete(listener);
@@ -48,6 +68,11 @@ const cardRegistry = {
 // Make it globally accessible
 if (typeof window !== 'undefined') {
     window.__cardRegistry = cardRegistry;
+
+    // Track mouse position globally
+    window.addEventListener('mousemove', (e) => {
+        cardRegistry.updateMousePos(e.clientX, e.clientY);
+    }, { passive: true });
 }
 
 export function getCardRegistry() {

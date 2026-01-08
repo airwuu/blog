@@ -316,27 +316,30 @@ export default function InteractableBackground() {
                         }
 
                         if (cellType === 2) {
-                            // Border cell - check for pooling glow
-                            let poolingBoost = 0;
-                            if (numWaves > 0) {
-                                // Quick wave check for this position
-                                for (let w = 0; w < numWaves; w++) {
-                                    const wave = activeWaves[w];
-                                    const dx = posX - wave.x;
-                                    const dy = posY - wave.y;
-                                    const distSq = dx * dx + dy * dy;
-                                    if (distSq < WAVE_MAX_DIST_SQ) {
-                                        poolingBoost += wave.strength * wave.fadeout * 0.3;
-                                    }
-                                }
+                            // Border cell - check if this card is hovered
+                            const hoveredIndex = cardRegistry ? cardRegistry.getHoveredCardIndex() : -1;
+                            let isHovered = false;
+
+                            // Check if this border cell belongs to a hovered card
+                            if (hoveredIndex >= 0 && hoveredIndex < cards.length) {
+                                const hoveredCard = cards[hoveredIndex];
+                                // Check if this cell is on the border of the hovered card
+                                const onHoveredTop = posY >= hoveredCard.y - charHeight && posY < hoveredCard.y + charHeight && posX >= hoveredCard.x - charWidth && posX <= hoveredCard.right + charWidth;
+                                const onHoveredBottom = posY >= hoveredCard.bottom - charHeight && posY <= hoveredCard.bottom + charHeight && posX >= hoveredCard.x - charWidth && posX <= hoveredCard.right + charWidth;
+                                const onHoveredLeft = posX >= hoveredCard.x - charWidth && posX < hoveredCard.x + charWidth && posY >= hoveredCard.y && posY <= hoveredCard.bottom;
+                                const onHoveredRight = posX >= hoveredCard.right - charWidth && posX <= hoveredCard.right + charWidth && posY >= hoveredCard.y && posY <= hoveredCard.bottom;
+                                isHovered = onHoveredTop || onHoveredBottom || onHoveredLeft || onHoveredRight;
                             }
 
-                            if (poolingBoost > 0.2) {
-                                const glowIntensity = Math.min(1, poolingBoost);
-                                const r = (100 + glowIntensity * 55) | 0;
-                                const g = (140 + glowIntensity * 40) | 0;
-                                const a = 0.6 + glowIntensity * 0.4;
-                                ctx.fillStyle = `rgba(${r}, ${g}, 255, ${a})`;
+                            if (isHovered) {
+                                const isDark = document.documentElement.classList.contains('dark');
+                                if (isDark) {
+                                    // Muted green glow for dark mode
+                                    ctx.fillStyle = 'rgba(120, 180, 120, 0.9)';
+                                } else {
+                                    // Warm brown glow for light mode
+                                    ctx.fillStyle = 'rgba(180, 130, 80, 0.9)';
+                                }
                             } else {
                                 ctx.fillStyle = borderColor;
                             }
