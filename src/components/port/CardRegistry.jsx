@@ -1,26 +1,27 @@
-import { createContext, useContext, useRef, useCallback, useEffect } from 'react';
+// Global card registry for cross-island communication in Astro
+// Uses a global store pattern instead of React context
 
-// Context for card registration
-const CardRegistryContext = createContext(null);
+const cardRegistry = {
+    cards: new Map(),
+    listeners: new Set(),
 
-// Provider component
-export function CardRegistryProvider({ children }) {
-    const cardsRef = useRef(new Map());
-    const listenersRef = useRef(new Set());
-
-    const registerCard = useCallback((id, element) => {
+    register(id, element) {
         if (element) {
-            cardsRef.current.set(id, element);
+            this.cards.set(id, element);
         } else {
-            cardsRef.current.delete(id);
+            this.cards.delete(id);
         }
-        // Notify listeners of change
-        listenersRef.current.forEach(listener => listener());
-    }, []);
+        this.notifyListeners();
+    },
 
-    const getCardBounds = useCallback(() => {
+    unregister(id) {
+        this.cards.delete(id);
+        this.notifyListeners();
+    },
+
+    getCardBounds() {
         const bounds = [];
-        cardsRef.current.forEach((element) => {
+        this.cards.forEach((element) => {
             const rect = element.getBoundingClientRect();
             bounds.push({
                 x: rect.left,
@@ -32,42 +33,57 @@ export function CardRegistryProvider({ children }) {
             });
         });
         return bounds;
-    }, []);
+    },
 
-    const subscribe = useCallback((listener) => {
-        listenersRef.current.add(listener);
-        return () => listenersRef.current.delete(listener);
-    }, []);
+    subscribe(listener) {
+        this.listeners.add(listener);
+        return () => this.listeners.delete(listener);
+    },
 
-    const value = {
-        registerCard,
-        getCardBounds,
-        subscribe,
-    };
+    notifyListeners() {
+        this.listeners.forEach(listener => listener());
+    }
+};
 
-    return (
-        <CardRegistryContext.Provider value={value}>
-            {children}
-        </CardRegistryContext.Provider>
-    );
+// Make it globally accessible
+if (typeof window !== 'undefined') {
+    window.__cardRegistry = cardRegistry;
 }
 
-// Hook for background to access card positions
+export function getCardRegistry() {
+    if (typeof window !== 'undefined' && window.__cardRegistry) {
+        return window.__cardRegistry;
+    }
+    return cardRegistry;
+}
+
+// React hooks for convenience
+import { useEffect, useRef } from 'react';
+
 export function useCardRegistry() {
-    return useContext(CardRegistryContext);
+    return getCardRegistry();
 }
 
-// Hook for cards to register themselves
 export function useRegisterCard(id) {
-    const registry = useContext(CardRegistryContext);
     const ref = useRef(null);
 
     useEffect(() => {
-        if (registry && ref.current) {
-            registry.registerCard(id, ref.current);
-            return () => registry.registerCard(id, null);
+        const registry = getCardRegistry();
+        if (ref.current) {
+            registry.register(id, ref.current);
+            return () => registry.unregister(id);
         }
-    }, [registry, id]);
+    }, [id]);
 
     return ref;
+}
+
+// Legacy context exports for compatibility
+import { createContext, useContext } from 'react';
+
+const CardRegistryContext = createContext(null);
+
+export function CardRegistryProvider({ children }) {
+    // Just pass through children - registry is global now
+    return children;
 }

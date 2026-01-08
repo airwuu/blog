@@ -4,10 +4,10 @@ import './InteractableBackground.css';
 
 const ASCII_CHARS = ' .:-=+*#%@';
 const BOX_CHARS = {
-    topLeft: '+',
-    topRight: '+',
-    bottomLeft: '+',
-    bottomRight: '+',
+    topLeft: '=',
+    topRight: '=',
+    bottomLeft: '=',
+    bottomRight: '=',
     horizontal: '-',
     vertical: '|',
 };

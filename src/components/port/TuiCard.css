@@ -1,0 +1,19 @@
+.tui-card {
+    position: relative;
+    background: transparent;
+    /* Padding to leave room for ASCII border drawn by background */
+    padding: 14px;
+    margin: 4px;
+}
+
+.tui-card-content {
+    position: relative;
+    z-index: 2;
+    /* Fully transparent - no background */
+    background: transparent;
+}
+
+/* No hover effect needed without background */
+.tui-card:hover .tui-card-content {
+    background: transparent;
+}
