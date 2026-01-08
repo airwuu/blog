@@ -8,7 +8,7 @@ import logo from '../../public/static/logo.svg'
 ---
 
 <header
-  class="bg-background sticky top-0 z-10 backdrop-blur-md"
+  class="sticky top-0 z-10 bg-transparent"
   id="header"
   transition:persist
 >
@@ -38,46 +38,24 @@ import logo from '../../public/static/logo.svg'
   </div>
 </header>
 <script>
-  // Select the header element
   const header = document.getElementById('header');
-  // Fallback selector if you don't want to add an ID (less robust)
-  // const header = document.querySelector('header.sticky');
-
-  const noiseClass = 'noise';
-  const bgClass = 'bg-background';
 
   if (header) {
-    // Function to check scroll position and toggle the class
     const checkScrollAndToggleClass = () => {
-      // Get current vertical scroll position
       const scrollY = window.scrollY;
-
-      // If scrolled down more than 0 pixels
+      
       if (scrollY > 0) {
-        // Add the class if it's not already there
-        header.classList.remove(noiseClass);
-        header.classList.remove(bgClass);
+        // Add subtle backdrop blur when scrolled
+        header.classList.add('backdrop-blur-md');
+        header.classList.add('bg-background/50');
       } else {
-        // Remove the class if it is there
-        header.classList.add(noiseClass);
-        header.classList.add(bgClass);
+        // Fully transparent at top
+        header.classList.remove('backdrop-blur-md');
+        header.classList.remove('bg-background/50');
       }
     };
 
-    // 1. Run the check immediately when the script loads
-    // This handles cases where the page loads already scrolled down.
     checkScrollAndToggleClass();
-
-    // 2. Add an event listener to run the check whenever the user scrolls
     window.addEventListener('scroll', checkScrollAndToggleClass);
-
-    // Note on transition:persist:
-    // Astro's view transitions with persist *should* keep the header element
-    // and this script's listener active across navigations.
-    // However, if you encounter issues during page transitions, you might need
-    // to add cleanup logic using Astro's lifecycle events ('astro:before-swap')
-    // or re-run the initial check ('astro:page-load'), but start with this simpler version.
-  } else {
-    console.warn('Header element not found for scroll effect.');
   }
 </script>
