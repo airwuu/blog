@@ -12,6 +12,7 @@ import type { SocialLink } from '@/types'
 import { Icon } from 'astro-icon/components'
 import { SOCIAL_LINKS } from '@/consts'
 import TuiCard from '@/components/port/TuiCard'
+import TuiHeading from '@/components/TuiHeading.astro'
 
 interface Props {
   links: SocialLink[]
@@ -102,7 +103,7 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
 
   </section>
   <section class="flex flex-col gap-y-2">
-    <h2 class="text-2xl font-medium">Latest posts</h2>
+    <TuiHeading level={2}>Latest posts</TuiHeading>
     <ul class="flex flex-col gap-y-4">
       {
         blog.map((post) => (

@@ -62,12 +62,12 @@ const authors = await parseAuthors(entry.data.authors ?? [])
                     <span>{author.name}</span>
                   </div>
                 ))}
-                <Separator orientation="vertical" className="h-4!" />
+                <Separator orientation="vertical" className="!h-4" />
               </>
             )
           }
           <span>{formattedDate}</span>
-          <Separator orientation="vertical" className="h-4!" />
+          <Separator orientation="vertical" className="!h-4" />
           <span>{readTime}</span>
         </div>
 

@@ -4,8 +4,8 @@
 
 @theme inline {
   --font-sans:
-    Geist, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
   --font-mono:
     Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     'Liberation Mono', 'Courier New', monospace;
@@ -84,6 +84,7 @@
 }
 
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -94,6 +95,7 @@
 
   html {
     @apply bg-background text-foreground scheme-light;
+    overscroll-behavior: none;
 
     &.dark {
       @apply scheme-dark;
@@ -105,9 +107,10 @@
   }
 
   .disable-transitions * {
-    @apply transition-none!;
+    @apply !transition-none;
   }
 }
+
 .noise {
   position: relative;
 }

@@ -5,6 +5,7 @@ import PageHead from '@/components/PageHead.astro'
 import ProjectCard from '@/components/ProjectCard.astro'
 import Layout from '@/layouts/Layout.astro'
 import { getAllProjects } from '@/lib/data-utils'
+import TuiHeading from '@/components/TuiHeading.astro'
 
 const projects = await getAllProjects()
 ---
@@ -24,7 +25,7 @@ const projects = await getAllProjects()
 	</p>
       </div>
 
-      <h2 class="mb-4 text-2xl font-medium">Current Hobbies</h2>
+      <TuiHeading level={2} class="mb-4">Current Hobbies</TuiHeading>
       <div class="flex flex-col gap-4">
         {projects.map((project) => <ProjectCard project={project} />)}
       </div>

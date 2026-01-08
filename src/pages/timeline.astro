@@ -3,6 +3,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
 import Layout from '@/layouts/Layout.astro'
 import { TimelineFeed } from '@/components/TimelineFeed.jsx' 
+import TuiHeading from '@/components/TuiHeading.astro'
 ---
 
 <Layout class="max-w-3xl">
@@ -10,7 +11,7 @@ import { TimelineFeed } from '@/components/TimelineFeed.jsx'
   <Breadcrumbs items={[{ label: 'Timeline', icon: 'lucide:clock' }]} />
   <section>
     <div class="min-w-full">
-      <h2 class="mb-4 text-2xl font-medium">Create a Post:</h2>
+      <TuiHeading level={2} class="mb-4">Create a Post:</TuiHeading>
       <div class="prose rounded-xl border p-4 mb-8 bg-primary-foreground/50 backdrop-blur-sm">
         <form id="timelinePostForm" action="/api/timeline_post" method="POST">
           <div class="mb-4">
@@ -31,7 +32,7 @@ import { TimelineFeed } from '@/components/TimelineFeed.jsx'
         </form>
       </div>
 
-      <h2 class="mb-4 text-2xl font-medium">Timeline Posts:</h2>
+      <TuiHeading level={2} class="mb-4">Timeline Posts:</TuiHeading>
       
       <TimelineFeed client:load />
     </div>
