@@ -6,101 +6,16 @@ import { buttonVariants } from '@/components/ui/button'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
 import { getRecentPosts } from '@/lib/data-utils'
-import { Image } from 'astro:assets'
-import { ICON_MAP } from '@/consts'
-import type { SocialLink } from '@/types'
-import { Icon } from 'astro-icon/components'
-import { SOCIAL_LINKS } from '@/consts'
-import TuiCard from '@/components/port/TuiCard'
 import TuiHeading from '@/components/TuiHeading.astro'
+import ManPageHero from '@/components/ManPageHero.astro'
 
-interface Props {
-  links: SocialLink[]
-}
-
-let { links } = Astro.props
-links = SOCIAL_LINKS
 const blog = await getRecentPosts(SITE.featuredPostCount)
 ---
 
 <Layout>
   <PageHead slot="head" title="Home" />
   <section>
-    <TuiCard client:load>
-      <div class="flex overflow-hidden">
-        <div class="flex flex-col  space-y-1.5">
-          
-        </div>
-        <div class="md:pl-9">
-          <div class="flex flex-col space-y-1.5 p-6 pb-4 pt-5">
-            <h3 class="text-4xl leading-none font-medium">Aaron Wu</h3>
-            <p class="text-muted-foreground text-md">
-              <span class="text-lg">[ <span class="italic">air-uhn woo, ar-</span> ]</span> &bull; <span class="text-sm font-semibold uppercase tracking-wider bg-secondary/30 px-2 py-1 rounded">noun</span>
-            </p>
-          </div>
-          <div class="p-6 pt-0 space-y-2">
-            <div class="definition-item">
-              <p class="text-foreground">
-                <span class="font-bold text-lg mr-2">1.</span>
-                <span class="font-light">He is the result of a kid who fell down a long long rabbit hole when he tried to "hack" Club Penguin that one time many years ago.</span>
-              </p>
-              <p class="text-sm text-muted-foreground italic ml-6 mt-2">
-                <span class="font-semibold not-italic">Usage:</span> "That's such an <b>Aaron Wu</b> thing to do—learning javascript exploits just for game cosemetics."
-              </p>
-            </div>
-            <div class="definition-item">
-              <p class="text-foreground">
-                <span class="font-bold text-lg mr-2">2.</span>
-                <span class="font-light">A sentient being in an active state of opportunity-seeking, particularly in domains involving feline interaction.</span>
-              </p>
-              <p class="text-sm text-muted-foreground italic ml-6 mt-2">
-                <span class="font-semibold not-italic">Synonyms:</span> cat appreciator, lifetime learner, also someone who sometimes writes a lot of code
-              </p>
-            </div>
-            <p class="text-foreground text-md font-light italic">
-              Note: He is based in <u><a href="https://www.google.com/search?q=San+Diego">San Diego</a></u> and <u><a href="https://www.google.com/search?q=Bay Area,California">the Bay Area</a></u>
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center justify-center w-full max-w-1/6">
-          <div class="flex flex-col justify-between space-y-10">
-            <div class="absolute md:w-35 w-25">
-                <Image
-                src="/boycat.png"
-                alt="boy"
-                width={1200}
-                height={630}
-                class="absolute object-cover md:-translate-x-13 -translate-x-10 md:-translate-y-13 -translate-y-32"
-                />
-            </div>
-            <ul class="flex flex-col gap-5 pt-25" role="list">
-              {
-                links.map(({ href, label }) => (
-                  <li class="hover:bg-secondary rounded-md transition transition-duration-300 ease-in-out">
-                    <Link
-                      href={href}
-                      aria-label={label}
-                      title={label}
-                      class={buttonVariants({ variant: 'ghost', size: 'icon' })}
-                      external
-                    >
-                      <Icon
-                        name={
-                          ICON_MAP[label as keyof typeof ICON_MAP] ||
-                          'lucide:message-circle-question'
-                        }
-                        class="size-4"
-                      />
-                    </Link>
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
-        </div>
-      </div>
-    </TuiCard>
-
+    <ManPageHero />
   </section>
   <section class="flex flex-col gap-y-2">
     <TuiHeading level={2}>Latest posts</TuiHeading>
