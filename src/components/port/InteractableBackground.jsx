@@ -21,10 +21,10 @@ const getThemeColors = () => {
     for (let i = 0; i <= 100; i++) {
         const intensity = i / 100;
         if (isDark) {
-            // Dark mode: muted green to match site's secondary accent
-            const hue = 130 + intensity * 20; // 130-150 range (muted green)
-            const saturation = 8 + intensity * 12; // low saturation to match theme
-            const lightness = 15 + intensity * 25;
+            // Dark mode: warm cream/beige to match site's secondary accent
+            const hue = 40 + intensity * 10; // 40-50 range (warm beige)
+            const saturation = 15 + intensity * 15; // smooth warm tones
+            const lightness = 20 + intensity * 30;
             const alpha = 0.18 + intensity * 0.52;
             colorCache[i] = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
         } else {
@@ -44,6 +44,7 @@ const getThemeColors = () => {
         innerColor: isDark ? 'rgba(140, 100, 60, 0.12)' : 'rgba(120, 100, 80, 0.08)',
     };
 };
+
 
 // Pre-compute squared thresholds to avoid Math.sqrt
 const WAVE_MAX_DIST_SQ = 250000; // 500^2
@@ -139,8 +140,24 @@ export default function InteractableBackground() {
             // 0 = normal, 1 = inside card, 2+ = border with char type
             const cellTypes = new Uint8Array(currentCols * currentRows);
             const borderChars = new Array(currentCols * currentRows);
+            // Store which card (index in the cards array) controls this cell
+            const cellCardIndices = new Int16Array(currentCols * currentRows).fill(-1);
 
-            for (const card of cards) {
+            // Separate cards and erasers
+            const normalCards = [];
+            const erasers = [];
+
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                if (card.isBorderEraser) {
+                    erasers.push(card);
+                } else {
+                    normalCards.push({ ...card, originalIndex: i });
+                }
+            }
+
+            // PASS 1: Process normal cards and blockers
+            for (const card of normalCards) {
                 // Convert card bounds to cell indices
                 const startCol = Math.max(0, Math.floor((card.x - charWidth) / charWidth));
                 const endCol = Math.min(currentCols - 1, Math.ceil((card.right + charWidth) / charWidth));
@@ -156,23 +173,37 @@ export default function InteractableBackground() {
                         // Check if inside card
                         if (posX >= card.x && posX <= card.right &&
                             posY >= card.y && posY <= card.bottom) {
-                            cellTypes[idx] = 1; // inside
+
+                            // If it's a blocker, mark with special type 3 (blocked/transparent)
+                            if (card.isBlocker) {
+                                cellTypes[idx] = 3;
+                            } else {
+                                cellTypes[idx] = 1; // inside normal card
+                            }
+                            cellCardIndices[idx] = card.originalIndex;
                             continue;
                         }
 
                         // Check if on border
+                        // Blockers do NOT have borders
+                        if (card.isBlocker) continue;
+
                         const onTop = posY >= card.y - charHeight && posY < card.y + charHeight && posX >= card.x - charWidth && posX <= card.right + charWidth;
                         const onBottom = posY >= card.bottom - charHeight && posY <= card.bottom + charHeight && posX >= card.x - charWidth && posX <= card.right + charWidth;
                         const onLeft = posX >= card.x - charWidth && posX < card.x + charWidth && posY >= card.y && posY <= card.bottom;
                         const onRight = posX >= card.right - charWidth && posX <= card.right + charWidth && posY >= card.y && posY <= card.bottom;
 
                         if (onTop || onBottom || onLeft || onRight) {
+                            // Only set as border if not already a border (avoid overwriting corner chars if possible, but simplest is last-wins or carefully ordered)
+                            // Here simple overwrite
                             const isCornerTL = posY < card.y + charHeight && posX < card.x + charWidth;
                             const isCornerTR = posY < card.y + charHeight && posX >= card.right - charWidth;
                             const isCornerBL = posY >= card.bottom - charHeight && posX < card.x + charWidth;
                             const isCornerBR = posY >= card.bottom - charHeight && posX >= card.right - charWidth;
 
                             cellTypes[idx] = 2; // border
+                            cellCardIndices[idx] = card.originalIndex;
+
                             if (isCornerTL) borderChars[idx] = BOX_CHARS.topLeft;
                             else if (isCornerTR) borderChars[idx] = BOX_CHARS.topRight;
                             else if (isCornerBL) borderChars[idx] = BOX_CHARS.bottomLeft;
@@ -184,10 +215,37 @@ export default function InteractableBackground() {
                 }
             }
 
+            // PASS 2: Process erasers
+            // If a cell is currently a border (type 2) and falls within an eraser, turn it into type 1 (inside)
+            // or if it was empty, turn it into type 1 (to bridge the gap)
+            // Actually, we want it to look like "inside" content, meaning NO border char, but yes noise/char
+            for (const eraser of erasers) {
+                const startCol = Math.max(0, Math.floor((eraser.x - charWidth) / charWidth));
+                const endCol = Math.min(currentCols - 1, Math.ceil((eraser.right + charWidth) / charWidth));
+                const startRow = Math.max(0, Math.floor((eraser.y - charHeight) / charHeight));
+                const endRow = Math.min(currentRows - 1, Math.ceil((eraser.bottom + charHeight) / charHeight));
+
+                for (let row = startRow; row <= endRow; row++) {
+                    for (let col = startCol; col <= endCol; col++) {
+                        const idx = row * currentCols + col;
+                        const posX = col * charWidth;
+                        const posY = row * charHeight;
+
+                        if (posX >= eraser.x && posX <= eraser.right &&
+                            posY >= eraser.y && posY <= eraser.bottom) {
+                            // If it's a border or empty, make it "inside" (type 1)
+                            // This effectively "erases" the border character by treating it as normal content
+                            cellTypes[idx] = 1;
+                        }
+                    }
+                }
+            }
+
             cache.cols = currentCols;
             cache.rows = currentRows;
             cache.cellTypes = cellTypes;
             cache.borderChars = borderChars;
+            cache.cellCardIndices = cellCardIndices;
             return cache;
         };
 
@@ -305,6 +363,9 @@ export default function InteractableBackground() {
                     if (cellCache) {
                         const cellType = cellCache.cellTypes[idx];
 
+                        // If blocked/transparent, draw nothing
+                        if (cellType === 3) continue;
+
                         if (cellType === 1) {
                             // Inside card - dim noise
                             const innerNoise = noise(x * 2, y * 2, timestamp * 0.3);
@@ -319,23 +380,29 @@ export default function InteractableBackground() {
                             // Border cell - check if this card is hovered
                             const hoveredIndex = cardRegistry ? cardRegistry.getHoveredCardIndex() : -1;
                             let isHovered = false;
+                            const myCardIndex = cellCache.cellCardIndices[idx];
 
-                            // Check if this border cell belongs to a hovered card
-                            if (hoveredIndex >= 0 && hoveredIndex < cards.length) {
-                                const hoveredCard = cards[hoveredIndex];
-                                // Check if this cell is on the border of the hovered card
-                                const onHoveredTop = posY >= hoveredCard.y - charHeight && posY < hoveredCard.y + charHeight && posX >= hoveredCard.x - charWidth && posX <= hoveredCard.right + charWidth;
-                                const onHoveredBottom = posY >= hoveredCard.bottom - charHeight && posY <= hoveredCard.bottom + charHeight && posX >= hoveredCard.x - charWidth && posX <= hoveredCard.right + charWidth;
-                                const onHoveredLeft = posX >= hoveredCard.x - charWidth && posX < hoveredCard.x + charWidth && posY >= hoveredCard.y && posY <= hoveredCard.bottom;
-                                const onHoveredRight = posX >= hoveredCard.right - charWidth && posX <= hoveredCard.right + charWidth && posY >= hoveredCard.y && posY <= hoveredCard.bottom;
-                                isHovered = onHoveredTop || onHoveredBottom || onHoveredLeft || onHoveredRight;
+                            if (hoveredIndex !== -1 && myCardIndex !== -1) {
+                                // Direct hover
+                                if (hoveredIndex === myCardIndex) {
+                                    isHovered = true;
+                                } else {
+                                    // Group hover check
+                                    const hoveredCard = cards[hoveredIndex];
+                                    const myCard = cards[myCardIndex];
+                                    if (hoveredCard && myCard &&
+                                        hoveredCard.groupId &&
+                                        hoveredCard.groupId === myCard.groupId) {
+                                        isHovered = true;
+                                    }
+                                }
                             }
 
                             if (isHovered) {
                                 const isDark = document.documentElement.classList.contains('dark');
                                 if (isDark) {
-                                    // Muted green glow for dark mode
-                                    ctx.fillStyle = 'rgba(120, 180, 120, 0.9)';
+                                    // Warm cream glow for dark mode
+                                    ctx.fillStyle = 'rgba(235, 225, 200, 0.9)';
                                 } else {
                                     // Warm brown glow for light mode
                                     ctx.fillStyle = 'rgba(180, 130, 80, 0.9)';

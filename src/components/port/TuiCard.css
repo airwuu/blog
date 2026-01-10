@@ -6,6 +6,11 @@
     margin: 4px;
 }
 
+.tui-card.compact {
+    padding: 2px 8px;
+    /* Tighter padding for buttons */
+}
+
 .tui-card-content {
     position: relative;
     z-index: 2;

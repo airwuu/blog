@@ -9,12 +9,16 @@ interface TuiCardProps {
     id?: string;
 }
 
-export default function TuiCard({ children, className = '', id }: TuiCardProps) {
+export default function TuiCard({ children, className = '', id, ...props }: TuiCardProps) {
     const cardId = id || `tui-card-${++cardIdCounter}`;
     const cardRef = useRegisterCard(cardId);
 
     return (
-        <div ref={cardRef} className={`tui-card ${className}`}>
+        <div
+            ref={cardRef}
+            className={`tui-card ${className}`}
+            {...props}
+        >
             <div className="tui-card-content">
                 {children}
             </div>

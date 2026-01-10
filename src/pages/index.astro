@@ -1,43 +1,71 @@
 ---
 import BlogCard from '@/components/BlogCard.astro'
 import Link from '@/components/Link.astro'
+import ManPageHero from '@/components/ManPageHero.astro'
 import PageHead from '@/components/PageHead.astro'
+import BorderEraser from '@/components/port/BorderEraser'
+import TuiCard from '@/components/port/TuiCard'
+import TuiHeading from '@/components/TuiHeading.astro'
 import { buttonVariants } from '@/components/ui/button'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
 import { getRecentPosts } from '@/lib/data-utils'
-import TuiHeading from '@/components/TuiHeading.astro'
-import ManPageHero from '@/components/ManPageHero.astro'
 
 const blog = await getRecentPosts(SITE.featuredPostCount)
 ---
 
 <Layout>
   <PageHead slot="head" title="Home" />
-  <section>
+  <section class="pt-3">
     <ManPageHero />
   </section>
-  <section class="flex flex-col gap-y-2">
-    <TuiHeading level={2}>Latest posts</TuiHeading>
-    <ul class="flex flex-col gap-y-4">
-      {
-        blog.map((post) => (
-          <li>
-            <BlogCard entry={post} />
-          </li>
-        ))
-      }
-    </ul>
-    <div class="flex justify-center">
-      <Link
-        href="/blog"
-        class={buttonVariants({ variant: 'ghost' }) + ' group'}
+  <section class="mt-6 flex flex-col pt-3">
+    <!-- Tab Section -->
+    <div class="relative z-10 w-fit">
+      <TuiCard
+        client:load
+        className="compact px-6 pt-6 pb-3"
+        data-tui-group-hover-id="latest-posts"
       >
-        See all posts <span
-          class="ml-1.5 transition-transform group-hover:translate-x-1"
-          >&rarr;</span
+        <TuiHeading level={2}>Latest posts</TuiHeading>
+      </TuiCard>
+      <!-- Eraser to remove the boundary between tab and body -->
+      <!-- Positioned to cover the bottom of tab and top of body -->
+      <BorderEraser
+        client:load
+        className="absolute right-[4px] -bottom-2 left-[4px] h-4"
+      />
+    </div>
+
+    <!-- Body Section -->
+    <TuiCard
+      client:load
+      className="relative z-0 -mt-[4px] pt-6"
+      data-tui-group-hover-id="latest-posts"
+    >
+      <ul class="flex flex-col gap-y-4">
+        {
+          blog.map((post) => (
+            <li>
+              <BlogCard entry={post} />
+            </li>
+          ))
+        }
+      </ul>
+    </TuiCard>
+    <div class="mt-8 flex justify-center">
+      <TuiCard client:load className="group-button compact">
+        <Link
+          href="/blog"
+          class={buttonVariants({ variant: 'ghost' }) +
+            ' group hover:bg-transparent'}
         >
-      </Link>
+          See all posts <span
+            class="ml-1.5 transition-transform group-hover:translate-x-1"
+            >&rarr;</span
+          >
+        </Link>
+      </TuiCard>
     </div>
   </section>
 </Layout>

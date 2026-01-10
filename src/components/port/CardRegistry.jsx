@@ -25,6 +25,9 @@ const cardRegistry = {
         const bounds = [];
         this.cards.forEach((element) => {
             const rect = element.getBoundingClientRect();
+            const isBlocker = element.getAttribute('data-tui-blocker') === 'true';
+            const isBorderEraser = element.getAttribute('data-tui-border-eraser') === 'true';
+            const groupId = element.getAttribute('data-tui-group-hover-id');
             bounds.push({
                 x: rect.left,
                 y: rect.top,
@@ -32,6 +35,9 @@ const cardRegistry = {
                 bottom: rect.bottom,
                 width: rect.width,
                 height: rect.height,
+                isBlocker,
+                isBorderEraser,
+                groupId,
             });
         });
         return bounds;
