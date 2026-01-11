@@ -79,6 +79,11 @@ if (typeof window !== 'undefined') {
     window.addEventListener('mousemove', (e) => {
         cardRegistry.updateMousePos(e.clientX, e.clientY);
     }, { passive: true });
+
+    window.addEventListener('scroll', () => {
+        // Use current known mouse pos to re-check hover against moving elements
+        cardRegistry.updateMousePos(cardRegistry.mousePos.x, cardRegistry.mousePos.y);
+    }, { passive: true });
 }
 
 export function getCardRegistry() {
