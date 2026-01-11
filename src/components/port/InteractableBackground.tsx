@@ -123,6 +123,7 @@ export default function InteractableBackground() {
         let rows = 0;
         let grid: Cell[] = [];
         let mousePos = { x: -1000, y: -1000 };
+        let lastMousePos = { x: -1000, y: -1000 };
         let time = 0;
 
         const handleResize = () => {
@@ -269,14 +270,31 @@ export default function InteractableBackground() {
             });
 
             // --- 2. Physics & Ambient ---
-            // (Standard Wave Logic)
-            const mouseGridX = Math.floor(mousePos.x / CELL_SIZE);
-            const mouseGridY = Math.floor(mousePos.y / CELL_SIZE);
+            // Linear Interpolation for smooth trails
+            const dx = mousePos.x - lastMousePos.x;
+            const dy = mousePos.y - lastMousePos.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (mouseGridX >= 0 && mouseGridX < cols && mouseGridY >= 0 && mouseGridY < rows) {
-                const idx = mouseGridY * cols + mouseGridX;
-                grid[idx].waveEnergy = Math.min(grid[idx].waveEnergy + 5.0, 10);
+            // Interpolate steps if moved significantly to fill gaps
+            const steps = Math.ceil(dist / (CELL_SIZE / 2));
+
+            for (let i = 0; i <= steps; i++) {
+                const t = steps > 0 ? i / steps : 1;
+                const px = lastMousePos.x + dx * t;
+                const py = lastMousePos.y + dy * t;
+
+                const gx = Math.floor(px / CELL_SIZE);
+                const gy = Math.floor(py / CELL_SIZE);
+
+                if (gx >= 0 && gx < cols && gy >= 0 && gy < rows) {
+                    const idx = gy * cols + gx;
+                    // Inject energy
+                    grid[idx].waveEnergy = Math.min(grid[idx].waveEnergy + 5.0, 10);
+                }
             }
+
+            lastMousePos.x = mousePos.x;
+            lastMousePos.y = mousePos.y;
 
             const nextWaveEnergies = new Float32Array(grid.length);
 
