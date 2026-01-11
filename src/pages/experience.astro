@@ -1,271 +1,224 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
-// import ProjectCard from '@/components/ProjectCard.astro'
+import TimelineLine from '@/components/port/TimelineLine'
+import TuiCard from '@/components/port/TuiCard'
+import TuiHeading from '@/components/TuiHeading.astro'
 import Layout from '@/layouts/Layout.astro'
-import { getAllProjects } from '@/lib/data-utils'
-import {AnimatedHeading, AnimatedText} from '@/components/ui/animated-text';
-import {TiltCard} from '@/components/ui/tilt-card';
-import {Card, CardHeader, CardTitle, CardDescription, CardContent} from '@/components/ui/card.jsx';
 
-
-// const projects = await getAllProjects()
-// Color mapping for skills - remains the same
+// Color mapping for skills
 const tagColors = {
-  react: "bg-secondary/20 text-[#89b4fa]",
-  typescript: "bg-secondary/20 text-[#74c7ec]",
-  javascript: "bg-secondary/20 text-[#f9e2af]",
-  node: "bg-secondary/20 text-[#a6e3a1]",
-  aws: "bg-secondary/20 text-[#f5c2e7]",
-  vue: "bg-secondary/20 text-[#94e2d5]",
-  database: "bg-secondary/20 text-[#cba6f7]",
-  python: "bg-secondary/50 ",
-  firebase: "bg-secondary/20 text-[#f38ba8]",
-  mongo: "bg-secondary/20 text-[#74c7ec]",
-  default: "bg-secondary/50 text",
-};
+  react: 'bg-secondary/20 text-[#89b4fa]',
+  typescript: 'bg-secondary/20 text-[#74c7ec]',
+  javascript: 'bg-secondary/20 text-[#f9e2af]',
+  node: 'bg-secondary/20 text-[#a6e3a1]',
+  aws: 'bg-secondary/20 text-[#f5c2e7]',
+  vue: 'bg-secondary/20 text-[#94e2d5]',
+  database: 'bg-secondary/20 text-[#cba6f7]',
+  python: 'bg-secondary/50',
+  firebase: 'bg-secondary/20 text-[#f38ba8]',
+  mongo: 'bg-secondary/20 text-[#74c7ec]',
+  default: 'bg-secondary/50',
+}
 
-// Helper function to get skill color - remains the same
+// Helper function to get skill color
 const getSkillColor = (skill: string): string => {
-  const lowerSkill = skill.toLowerCase();
-  if (lowerSkill.includes("react")) return tagColors.react;
-  if (lowerSkill.includes("typescript")) return tagColors.typescript;
-  if (lowerSkill.includes("javascript") || lowerSkill.includes("jquery"))
-    return tagColors.javascript;
-  if (lowerSkill.includes("node") || lowerSkill.includes("express"))
-    return tagColors.node;
-  if (lowerSkill.includes("aws") || lowerSkill.includes("cloud"))
-    return tagColors.aws;
-  if (lowerSkill.includes("vue")) return tagColors.vue;
-  if (
-    lowerSkill.includes("mongo") ||
-    lowerSkill.includes("db")
-  )
-    return tagColors.database;
-    if (lowerSkill.includes("python")) return tagColors.python;
-    if (lowerSkill.includes("firebase")) return tagColors.firebase;
-    if (lowerSkill.includes("mongo")) return tagColors.mongo;
+  const lowerSkill = skill.toLowerCase()
+  if (lowerSkill.includes('react')) return tagColors.react
+  if (lowerSkill.includes('typescript')) return tagColors.typescript
+  if (lowerSkill.includes('javascript') || lowerSkill.includes('jquery'))
+    return tagColors.javascript
+  if (lowerSkill.includes('node') || lowerSkill.includes('express'))
+    return tagColors.node
+  if (lowerSkill.includes('aws') || lowerSkill.includes('cloud'))
+    return tagColors.aws
+  if (lowerSkill.includes('vue')) return tagColors.vue
+  if (lowerSkill.includes('mongo') || lowerSkill.includes('db'))
+    return tagColors.database
+  if (lowerSkill.includes('python')) return tagColors.python
+  if (lowerSkill.includes('firebase')) return tagColors.firebase
+  return tagColors.default
+}
 
-  return tagColors.default;
-};
-
-// Experience data - remains the same
+// Experience data
 const experiences = [
-  {
-    id: 1,
-    title: "PE Fellow",
-    company: "Meta & Major League Hacking Fellowship ",
-    period: "2025",
-    description:
-      "Practiced Production Engineering topics such as Automation, SWE, Observability, and Testing on production services",
-    skills: ["Python", "Bash", "SQL", "Prometheus", "Grafana", "CI/CD", "Linux Knowledge"],
-    highlights: [
-      "Met a lot of cool people and learned a lot from them! Thanks for the book recs!",
-      "Created live services on a VPS and maintained them throughout the program",
-    ],
-  },
   {
-    id: 2,
-    title: "CS Tutor",
-    company: "UC Merced - STEM Tutoring Hub",
-    period: "2025 - Present",
-    description:
-      "Provided guidance to students in computer science topics, including programming, algorithms, and debugging.",
-    skills: ["C", "C++", "Python", "Teaching", "Other"],
-    highlights: [
-      "Taught students about data structures and coding principles",
-      "Explained important mathematical concepts for programming",
-    ],
-  },
-  {
-    id: 3,
-    title: "Machine Learning Intern",
-    company: "Wilsilica - Lumos Control",
-    period: "2022 - 2023",
-    description:
-      "Developed prototypes for applications of human detection on smart lighting control, focusing on ML training for TinyML/EdgeTPU.",
-    skills: ["Python", "Tensorflow", "Google Coral", "ML", "SSH"],
-    highlights: [
-      "Implemented 2 lighting control demos for company at local San Diego trade show",
-      "Expanded on lighting control designs by combining a mix of location and gesture based controls",
-      "Designed and trained convolutional neural networks for human detection and body segmentation",
-    ],
-  },
-  
-  // Add more experiences if needed
-];
+    id: 1,
+    title: 'Production Engineering Fellow',
+    company: 'Meta & MLH Fellowship',
+    period: '2025',
+    description: 'Learned DevOps and SysAdmin topics through this Co-op. ',
+    skills: ['Python', 'Bash', 'SQL', 'Observability', 'CI/CD', 'Linux'],
+    highlights: [
+      'Learned DevOps and SysAdmin topics through this Co-op',
+      'Dockerized everything',
+      'Stress tested our VPS through some very silly scripts',
+    ],
+  },
+  {
+    id: 2,
+    title: 'CS Tutor',
+    company: 'UC Merced - STEM Tutoring Hub',
+    period: '2025 - Present',
+    description: 'Provided guidance to students in computer science topics.',
+    skills: ['C', 'C++', 'Python', 'Teaching', 'Drawing'],
+    highlights: [
+      'Taught students algorithms and data structures',
+      'Discussed philosophy with coworkers',
+    ],
+  },
+  {
+    id: 3,
+    title: 'Machine Learning Intern',
+    company: 'Wilsilica - Lumos Control',
+    period: '2022 - 2023',
+    description:
+      'Implemented tiny machine learning models into smart lighting.',
+    skills: ['Python', 'Tensorflow', 'Google Coral', 'ML', 'SSH'],
+    highlights: [
+      'Created smart lighting prototypes for company',
+      'Made gesture based lighting controls for live demos',
+      'Gathered, annotated, and trained in-house models',
+    ],
+  },
+]
 
-// Education data - remains the same
+// Education data
 const education = [
-  {
-    id: 1,
-    degree: "B.S. Computer Science and Engineering",
-    institution: "University of California, Merced",
-    period: "2023 - Present",
-    description: "Unexpectedly, there's more than just cows and farmland here.",
-  },
-  {
-    id: 2,
-    degree: "Your Typical Boring High School Diploma",
-    institution: "Canyon Crest Academy",
-    period: "2019 - 2023",
-    description: "Go Ravens! Definitely learned so so much here. ",
-  },
-];
-
-// Framer Motion variants often need to be handled *within* the client component
-// or passed as props if the component is designed to accept them.
-// For simplicity, we assume the components below handle their animations internally
-// based on props or their own definitions. The `client:visible` directive ensures
-// their JS loads and the animations run when they enter the viewport.
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.07,
-      duration: 0.1,
-      ease: "easeOut",
-    },
-  }),
-};
-
-const educationFadeInUp = (index: number) => ({
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    transition: { delay: index * 0.1, duration: 0.1 },
-    viewport: { once: true, amount: 0.2 }
-});
-const { page } = Astro.props
+  {
+    id: 1,
+    degree: 'B.S. Computer Science and Engineering',
+    institution: 'University of California, Merced',
+    period: '2023 - Present',
+    description: "Unexpectedly, there's more than just cows and farmland here.",
+  },
+  {
+    id: 2,
+    degree: 'High School',
+    institution: 'Canyon Crest Academy',
+    period: '2019 - 2023',
+    description: "I wouldn't have eaten the pizza here if it wasn't free.",
+  },
+]
 ---
+
 <Layout>
   <PageHead slot="head" title="Experiences" />
   <Breadcrumbs items={[{ label: 'Experiences', icon: 'lucide:briefcase' }]} />
-  <div class="container px-4 py-10 mx-auto max-w-5xl">
-    <div class="mb-12 text-center">
-      <div class="text-4xl md:text-5xl lg:text-6xl mb-3">
-        My Experiences
-      </div>
-      <div class="text-xl text-muted-foreground">
+
+  <div class="mx-auto max-w-4xl">
+    <!-- Header -->
+    <!-- <div class="mb-8 text-center">
+      <h1 class="mb-2 text-4xl md:text-5xl">My Experiences</h1>
+      <p class="text-muted-foreground text-lg">
         some relevant things i've done
-      </div> 
-    </div>
+      </p>
+    </div> -->
 
-    <div class="relative mb-20">
-      <div class="absolute left-0 md:left-1/2 h-full w-px bg-gradient-to-b from-foreground/90 via-foreground/70 to-transparent transform md:-translate-x-1/2"></div>
+    <!-- Timeline Section -->
+    <section class="mb-12">
+      <div class="mb-6 flex justify-center">
+        <TuiCard client:load className="compact px-6 pt-6 pb-3">
+          <TuiHeading level={2}>Experience</TuiHeading>
+        </TuiCard>
+      </div>
 
-      <div class="relative space-y-10">
-        {experiences.map((exp, index) => (
-          <div class:list={[
-              "relative flex flex-col md:flex-row items-start md:items-center",
-              index % 2 === 0 ? "pl-5 md:pl-0 md:flex-row-reverse" : "pl-5 md:pl-0" // Adjusted padding for consistency
-            ]}>
-              {/* Timeline Dot - Simple div, could be animated with JS/CSS if needed */}
-              <div class="absolute left-0 md:left-1/2 w-3 h-3 rounded-full bg-foreground transform -translate-x-1/2 md:-translate-x-1/2 z-10 mt-1 md:mt-0"></div>
+      <!-- Timeline with connecting lines -->
+      <div class="flex flex-col items-center">
+        {
+          experiences.map((exp, index) => (
+            <>
+              {/* Timeline connector before card (except first) */}
+              {index > 0 && (
+                <div class="flex justify-center">
+                  <TimelineLine client:load className="h-8" />
+                </div>
+              )}
 
-              {/* Period Section */}
-              <div class:list={[
-                  "absolute left-6 top-0 md:static font-extrabold md:flex-1 mb-3 md:mb-0 md:px-6",
-                    "-translate-y-7 md:translate-y-0", // Positioning adjustment
-                  index % 2 === 0 ? "md:text-left" : "md:text-right"
-                ]}>
-                <div class="text-foreground font-mono text-sm md:text-base">
-                  {exp.period}
-                </div>
-              </div>
+              {/* Experience card */}
+              <TuiCard client:load className="p-0 w-full max-w-2xl">
+                <div class="p-6">
+                  {/* Header Row */}
+                  <div class="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h3 class="text-secondary text-xl font-bold">
+                        {exp.title}
+                      </h3>
+                      <p class="text-muted-foreground">{exp.company}</p>
+                    </div>
+                    <span class="text-muted-foreground mt-1 font-mono text-sm sm:mt-0">
+                      {exp.period}
+                    </span>
+                  </div>
 
-              {/* Experience Card Section */}
-              <div class="w-full pl-8 md:pl-5 md:w-1/2 md:max-w-md md:px-6 ">
-                {/* TiltCard needs client-side JS for interactivity and potentially animation */}
-                  <TiltCard
-                  client:visible={{ rootMargin: "50px" }}
-                  tiltStrength={4}
-                  glareOpacity={0.08}
-                  glareColor="rgb(102, 132, 98, 0.8)"
-                  borderGlow={true}
-                  initial={fadeInUp.hidden}
-                  whileInView={fadeInUp.visible(index)}
-                  viewport={{ once: true, amount: 0.2 }}
-                >
-                  {/* Card component might also be a React component if TiltCard requires it */}
-                    <Card className="bg-primary-foreground/50 backdrop-blur-sm border-white/5 overflow-hidden">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-secondary">{exp.title}</CardTitle>
-                        <CardDescription className="text-base font-medium text-muted-foreground">
-                          {exp.company}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p class="mb-4">{exp.description}</p>
+                  {/* Description */}
+                  <p class="mb-4">{exp.description}</p>
 
-                        <div class="flex flex-wrap gap-2 mb-4">
-                          {exp.skills.map((skill) => (
-                            <span
+                  {/* Skills */}
+                  <div class="mb-4 flex flex-wrap gap-2">
+                    {exp.skills.map((skill) => (
+                      <span
+                        class:list={[
+                          'rounded-full px-2 py-1 text-xs',
+                          getSkillColor(skill),
+                        ]}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
 
-                              class:list={[
-                                "px-2 py-1 text-xs rounded-full",
-                                getSkillColor(skill) // Use the helper function
-                              ]}
-                            >
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
+                  {/* Highlights */}
+                  <div>
+                    <h4 class="mb-2 font-medium">Notes:</h4>
+                    <ul class="text-muted-foreground list-outside list-disc space-y-1 pl-5 text-sm">
+                      {exp.highlights.map((highlight) => (
+                        <li>{highlight}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </TuiCard>
+            </>
+          ))
+        }
+      </div>
+    </section>
 
-                        <div class="space-y-2">
-                          <h4 class="font-medium">Key Achievements</h4>
-                          <ul class="space-y-1 list-disc list-outside pl-5 text-sm text-muted-foreground">
-                            {exp.highlights.map((highlight, i) => (
-                              <li >{highlight}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TiltCard>
-              </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <!-- Education Section -->
+    <section>
+      <div class="mb-6 flex justify-center">
+        <TuiCard client:load className="compact px-6 pt-6 pb-3">
+          <TuiHeading level={2}>Education</TuiHeading>
+        </TuiCard>
+      </div>
 
-    <div class="mb-10 text-center">
-      <div class="text-3xl md:text-4xl mb-10">
-        Education
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-      {education.map((edu) => (
-        <TiltCard
-          client:visible={{ rootMargin: "50px" }}
-          tiltStrength={3}
-          glareOpacity={0.08}
-          glareColor="rgb(102, 132, 98, 0.8)"
-          borderGlow={true}
-
-          initial={fadeInUp.hidden}
-          whileInView={fadeInUp.visible(education.indexOf(edu))}
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <Card className="h-full bg-primary-foreground/50 backdrop-blur-sm border-white/5">
-            <CardHeader>
-              <CardTitle className="text-lg text-secondary">{edu.degree}</CardTitle>
-              <CardDescription className="text-base font-medium">
-                {edu.institution}
-              </CardDescription>
-              <div class="text-sm text-muted-foreground">
-                {edu.period}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p>{edu.description}</p>
-            </CardContent>
-          </Card>
-        </TiltCard>
-      ))}
-    </div>
-  </div>
+      <!-- Education cards with timeline -->
+      <div class="flex flex-col items-center gap-0">
+        {
+          education.map((edu, index) => (
+            <>
+              {index > 0 && (
+                <div class="flex justify-center">
+                  <TimelineLine client:load className="h-8" />
+                </div>
+              )}
+              <TuiCard client:load className="p-0 w-full max-w-2xl">
+                <div class="p-6">
+                  <h3 class="text-secondary mb-1 text-lg font-bold">
+                    {edu.degree}
+                  </h3>
+                  <p class="text-muted-foreground mb-1">{edu.institution}</p>
+                  <p class="text-muted-foreground mb-3 font-mono text-sm">
+                    {edu.period}
+                  </p>
+                  <p>{edu.description}</p>
+                </div>
+              </TuiCard>
+            </>
+          ))
+        }
+      </div>
+    </section>
+  </div>
 </Layout>
