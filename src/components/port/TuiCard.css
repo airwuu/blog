@@ -1,24 +1,29 @@
+/* TuiCard.css */
+
 .tui-card {
     position: relative;
-    background: transparent;
-    /* Padding to leave room for ASCII border drawn by background */
-    padding: 14px;
-    margin: 4px;
-}
-
-.tui-card.compact {
-    padding: 2px 8px;
-    /* Tighter padding for buttons */
+    /* Important for layout but background is handled by canvas */
 }
 
 .tui-card-content {
+    /* Ensure content sits above the "virtual" border drawn by canvas */
     position: relative;
-    z-index: 2;
-    /* Fully transparent - no background */
-    background: transparent;
+    z-index: 10;
+
+    /* Matches the CELL_SIZE (16px) essentially */
+    /* The border is drawn on the grid line. 
+       We need padding so content doesn't overlap the border chars. */
+    padding: 16px;
 }
 
-/* No hover effect needed without background */
-.tui-card:hover .tui-card-content {
-    background: transparent;
+
+/* Utility classes used in Astro */
+.tui-card.compact .tui-card-content {
+    padding: 8px 16px;
+}
+
+/* Ensure no default backgrounds interfere */
+.tui-card,
+.tui-card * {
+    box-sizing: border-box;
 }
