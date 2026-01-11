@@ -5,30 +5,89 @@ import { useCardRegistry } from './CardRegistry';
  * InteractableBackground.tsx
  * 
  * Implements a dynamic ASCII background with:
- * - Ambient "Blob" animation (plasma/noise effect)
- * - Wave simulation (fluid energy flow from mouse)
- * - Dynamic Character Set mapping (energy -> char)
- * - "Pooling" blocking effect against TuiCards
- * - Glowing ASCII borders
+ * - Directional Border Animations (Enter/Exit)
+ * - Ambient "Blob" animation
+ * - Wave simulation
+ * - Navbar Fade-out
  */
 
 interface Cell {
-    energy: number;     // Current energy (physics + ambient)
-    waveEnergy: number; // Just the wave/mouse energy part
+    energy: number;
+    waveEnergy: number;
     prevWaveEnergy: number;
     char: string;
     isBlocker: boolean;
     isBorder: boolean;
     borderChar?: string;
+    cardIndex?: number; // Index of the card this cell belongs to (if border/blocker)
+}
+
+interface CardAnimState {
+    lightCenter: number; // 0..1 (perimeter position)
+    lightCoverage: number; // 0..0.5 (radius of light)
+    darkCenter: number; // 0..1
+    darkCoverage: number; // 0..0.5
+    isHovered: boolean;
 }
 
 // Density string for energy mapping
-const CHARS = '·,:+*x#%@'; // Low to high energy
+const CHARS = '·,:+*x#%@';
+
+// Helper: Get perimeter distance (0..1) for a point on the rect border
+function getPerimeterPos(x: number, y: number, rect: { x: number, y: number, width: number, height: number }): number {
+    const relX = x - rect.x;
+    const relY = y - rect.y;
+    const w = rect.width;
+    const h = rect.height;
+
+    // Clamping to ensure we are "inside" the bounding box logic for projection
+    const clampedX = Math.max(0, Math.min(w, relX));
+    const clampedY = Math.max(0, Math.min(h, relY));
+
+    // Calculate distance to each edge
+    const distTop = clampedY; // Distance from top (y=0)
+    const distBottom = h - clampedY; // Distance from bottom (y=h)
+    const distLeft = clampedX; // Distance from left (x=0)
+    const distRight = w - clampedX; // Distance from right (x=w)
+
+    const minDist = Math.min(distTop, distBottom, distLeft, distRight);
+
+    // Total perimeter for normalization
+    const totalPerim = 2 * (w + h);
+
+    if (minDist === distTop) {
+        // Top Edge: 0 to W
+        return clampedX / totalPerim;
+    } else if (minDist === distRight) {
+        // Right Edge: W to W+H
+        return (w + clampedY) / totalPerim;
+    } else if (minDist === distBottom) {
+        // Bottom Edge: W+H to 2W+H (Right to Left)
+        // From right corner (W, H) to left corner (0, H)
+        // distance traveled on bottom edge = (w - clampedX)
+        return (w + h + (w - clampedX)) / totalPerim;
+    } else {
+        // Left Edge: 2W+H to 2W+2H (Bottom to Top)
+        // From bottom corner (0, H) to top corner (0, 0)
+        // distance traveled on left edge = (h - clampedY)
+        return (2 * w + h + (h - clampedY)) / totalPerim;
+    }
+}
+
+// Distance between two perimeter points (0..1) on a closed loop
+function minDist(a: number, b: number): number {
+    const diff = Math.abs(a - b);
+    return Math.min(diff, 1 - diff);
+}
 
 export default function InteractableBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const registry = useCardRegistry();
     const [themeColors, setThemeColors] = useState({ bg: '#000000', fg: '#ffffff', accent: '#33ff33' });
+
+    // Animation states stored in a ref to persist across renders without re-triggering
+    const animStatesRef = useRef<Map<number, CardAnimState>>(new Map());
+    const prevHoveredRef = useRef<number>(-1);
 
     const CELL_SIZE = 16;
     const FONT_SIZE = 12;
@@ -64,7 +123,7 @@ export default function InteractableBackground() {
         let rows = 0;
         let grid: Cell[] = [];
         let mousePos = { x: -1000, y: -1000 };
-        let time = 0; // For ambient noise
+        let time = 0;
 
         const handleResize = () => {
             const dpr = window.devicePixelRatio || 1;
@@ -84,6 +143,7 @@ export default function InteractableBackground() {
                 char: CHARS[0],
                 isBlocker: false,
                 isBorder: false,
+                cardIndex: undefined,
             }));
         };
 
@@ -99,15 +159,83 @@ export default function InteractableBackground() {
         const render = () => {
             time += 0.01;
             const bounds = registry.getCardBounds();
+            const currentHoveredIdx = registry.getHoveredCardIndex();
+            const prevHoveredIdx = prevHoveredRef.current;
 
-            // 1. Identify Blockers/Borders
+            // --- 0. Animation State Updates ---
+
+            // Check for Hover Change
+            if (currentHoveredIdx !== prevHoveredIdx) {
+                // Exit Event for Old
+                if (prevHoveredIdx !== -1 && bounds[prevHoveredIdx]) {
+                    const rect = bounds[prevHoveredIdx];
+                    const exitPos = getPerimeterPos(mousePos.x, mousePos.y, rect);
+
+                    if (!animStatesRef.current.has(prevHoveredIdx)) {
+                        animStatesRef.current.set(prevHoveredIdx, {
+                            lightCenter: 0, lightCoverage: 0,
+                            darkCenter: exitPos, darkCoverage: 0,
+                            isHovered: false
+                        });
+                    }
+                    const state = animStatesRef.current.get(prevHoveredIdx)!;
+                    state.isHovered = false;
+                    state.darkCenter = exitPos;
+                    state.darkCoverage = 0; // Reset dark expansion
+                    // Light keeps its current state until consumed by dark
+                }
+
+                // Enter Event for New
+                if (currentHoveredIdx !== -1 && bounds[currentHoveredIdx]) {
+                    const rect = bounds[currentHoveredIdx];
+                    const enterPos = getPerimeterPos(mousePos.x, mousePos.y, rect);
+
+                    if (!animStatesRef.current.has(currentHoveredIdx)) {
+                        animStatesRef.current.set(currentHoveredIdx, {
+                            lightCenter: enterPos, lightCoverage: 0,
+                            darkCenter: 0, darkCoverage: 1, // Already fully dark
+                            isHovered: true
+                        });
+                    }
+                    const state = animStatesRef.current.get(currentHoveredIdx)!;
+                    state.isHovered = true;
+                    state.lightCenter = enterPos;
+                    state.lightCoverage = 0; // Reset light expansion
+                    state.darkCoverage = 1; // Existing dark state doesn't really matter if light overwrites, but clean up
+                }
+
+                prevHoveredRef.current = currentHoveredIdx;
+            }
+
+            // Update anim progress
+            const ANIM_SPEED = 0.04;
+            animStatesRef.current.forEach((state) => {
+                if (state.isHovered) {
+                    // Expanding Light
+                    if (state.lightCoverage < 0.6) { // 0.6 to be safe > 0.5
+                        state.lightCoverage += ANIM_SPEED;
+                    }
+                } else {
+                    // Expanding Dark (Removing Light)
+                    if (state.darkCoverage < 0.6) {
+                        state.darkCoverage += ANIM_SPEED;
+                    } else {
+                        // Animation complete, reset to clean state
+                        state.lightCoverage = 0;
+                        state.darkCoverage = 0;
+                    }
+                }
+            });
+
+
+            // --- 1. Identify Blockers/Borders ---
             for (let i = 0; i < grid.length; i++) {
                 grid[i].isBlocker = false;
                 grid[i].isBorder = false;
-                grid[i].borderChar = undefined;
+                grid[i].cardIndex = undefined;
             }
 
-            bounds.forEach(rect => {
+            bounds.forEach((rect, cardIdx) => {
                 if (!rect.isBlocker) return;
                 const startX = Math.floor(rect.x / CELL_SIZE);
                 const endX = Math.floor(rect.right / CELL_SIZE);
@@ -118,6 +246,7 @@ export default function InteractableBackground() {
                     for (let x = startX; x <= endX; x++) {
                         if (x < 0 || x >= cols || y < 0 || y >= rows) continue;
                         const idx = y * cols + x;
+                        grid[idx].cardIndex = cardIdx; // Tracking
 
                         const isTop = y === startY;
                         const isBottom = y === endY;
@@ -139,7 +268,8 @@ export default function InteractableBackground() {
                 }
             });
 
-            // 2. Physics & Ambient Calculation
+            // --- 2. Physics & Ambient ---
+            // (Standard Wave Logic)
             const mouseGridX = Math.floor(mousePos.x / CELL_SIZE);
             const mouseGridY = Math.floor(mousePos.y / CELL_SIZE);
 
@@ -154,69 +284,40 @@ export default function InteractableBackground() {
                 for (let x = 0; x < cols; x++) {
                     const idx = y * cols + x;
                     const cell = grid[idx];
+                    if (cell.isBlocker) continue;
 
-                    if (cell.isBlocker) {
-                        nextWaveEnergies[idx] = 0;
-                        continue;
-                    }
-
-                    // --- Wave Propagation ---
                     let sum = cell.waveEnergy;
                     let count = 1;
-
                     const neighbors = [
                         { dx: 0, dy: -1 }, { dx: 0, dy: 1 },
                         { dx: -1, dy: 0 }, { dx: 1, dy: 0 }
                     ];
-
                     for (const { dx, dy } of neighbors) {
                         const nx = x + dx;
                         const ny = y + dy;
-
                         if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
                             const nIdx = ny * cols + nx;
                             const neighbor = grid[nIdx];
-
-                            if (neighbor.isBlocker) {
-                                // Blockers act as insulators - no energy flow into them
-                                // We simply don't add them to the average calculation
-                                // This causes energy to "stick" in cells near borders (pooling)
-                                // without creating an unstable feedback loop.
-                            } else {
+                            if (!neighbor.isBlocker) {
                                 sum += neighbor.waveEnergy;
                                 count++;
                             }
                         }
                     }
+                    nextWaveEnergies[idx] = (sum / count) * DAMPING;
 
-                    const average = sum / count;
-                    nextWaveEnergies[idx] = average * DAMPING;
-
-                    // --- Ambient Noise ("Blobs") ---
-                    // Simple plasma: combination of sines
-                    // Scale coords for smoother noise
+                    // Ambient
                     const nx = x * 0.1;
                     const ny = y * 0.1;
-                    const v = Math.sin(nx + time) +
-                        Math.sin(ny + time) +
-                        Math.sin((nx + ny + time) * 0.5);
-                    // Map v (-3 to 3) to 0-1 range roughly, then scale
-                    const ambient = (v + 3) / 6; // 0.0 to 1.0
-
-                    // Final Energy Composition
-                    // Add wave energy on top of ambient
-                    // Ambient is low-level (0.0 - 0.3), Wave is high-level (0.0 - 1.0+)
-
+                    const v = Math.sin(nx + time) + Math.sin(ny + time) + Math.sin((nx + ny + time) * 0.5);
+                    const ambient = (v + 3) / 6;
                     grid[idx].energy = (ambient * 0.3) + nextWaveEnergies[idx];
                 }
             }
+            for (let i = 0; i < grid.length; i++) grid[i].waveEnergy = nextWaveEnergies[i];
 
-            // Commit next state
-            for (let i = 0; i < grid.length; i++) {
-                grid[i].waveEnergy = nextWaveEnergies[i];
-            }
 
-            // 3. Draw
+            // --- 3. Draw ---
             ctx.fillStyle = themeColors.bg;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -237,41 +338,62 @@ export default function InteractableBackground() {
                     let char = CHARS[0];
                     let alpha = 0.15;
                     let color = themeColors.fg;
-                    // Visualize Energy
+
                     if (cell.isBorder) {
                         char = cell.borderChar || '+';
-                        // Border glow based on wave energy primarily, plus some ambient
-                        const borderEnergy = cell.energy * 2.0;
+
+                        // Default ambient glow check
+                        let borderEnergy = cell.energy * 2.0;
+
+                        // --- Border Animation Logic ---
+                        if (cell.cardIndex !== undefined) {
+                            const state = animStatesRef.current.get(cell.cardIndex);
+                            if (state) {
+                                // Calculate position of this specific border cell
+                                const rect = bounds[cell.cardIndex];
+                                // We need pixel coords for this cell to exact pos
+                                // x, y are grid coords. px, py are centers.
+                                const cellPos = getPerimeterPos(px, py, rect);
+
+                                // Check Light
+                                const distToLight = minDist(cellPos, state.lightCenter);
+                                const isLit = distToLight < state.lightCoverage;
+
+                                // Check Dark (Erasure)
+                                // If not hovered, darkness spreads.
+                                let isDarkened = false;
+                                if (!state.isHovered) {
+                                    const distToDark = minDist(cellPos, state.darkCenter);
+                                    isDarkened = distToDark < state.darkCoverage;
+                                }
+
+                                if (isLit && !isDarkened) {
+                                    borderEnergy = 3.0; // Highlight
+                                }
+                            }
+                        }
+
                         alpha = 0.2 + (borderEnergy * 0.8);
                         if (alpha > 1) alpha = 1;
                         if (borderEnergy > 0.6) color = themeColors.accent;
+
                     } else {
-                        // Map energy to char
                         const energy = Math.max(0, Math.min(1, cell.energy));
-                        // Quantize energy to char index
                         const charIndex = Math.floor(energy * (CHARS.length - 1));
                         char = CHARS[charIndex];
-
-                        // Alpha follows energy too
                         alpha = 0.1 + (energy * 0.7);
                     }
 
-                    // --- Fade Mask for Navbar ---
-                    // Fade out the top 120px
+                    // Navbar Fade
                     const fadeStart = 120;
                     if (py < fadeStart) {
                         const fadeFactor = Math.max(0, py / fadeStart);
-                        // Apply cubic easing for smoother fade
-                        const easedFade = fadeFactor * fadeFactor * fadeFactor;
-                        alpha *= easedFade;
-
-                        // Also dim/change char if heavily faded?
-                        // Just alpha is cleaner for "dissipating"
-                        if (alpha < 0.01) char = ''; // Don't draw if invisible
+                        alpha *= (fadeFactor * fadeFactor * fadeFactor);
+                        if (alpha < 0.01) char = '';
                     }
 
-                    // Cap alpha
                     if (alpha > 1) alpha = 1;
+
                     ctx.fillStyle = color;
                     ctx.globalAlpha = alpha;
                     ctx.fillText(char, px, py);

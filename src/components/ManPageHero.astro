@@ -14,7 +14,7 @@ const heroLinks = SOCIAL_LINKS.slice(0, 3)
 
 <div class="flex flex-col">
     <!-- Tab Section -->
-    <div class="relative z-10 w-fit">
+    <!-- <div class="relative z-10 w-fit">
         <TuiCard
             client:load
             className="compact px-6 pt-6 pb-3"
@@ -22,12 +22,11 @@ const heroLinks = SOCIAL_LINKS.slice(0, 3)
         >
             <TuiHeading level={2}>Info</TuiHeading>
         </TuiCard>
-        <!-- Eraser to remove the boundary between tab and body -->
         <BorderEraser
             client:load
             className="absolute right-[4px] -bottom-2 left-[4px] h-4"
         />
-    </div>
+    </div> -->
 
     <!-- Body Section -->
     <TuiCard
@@ -35,6 +34,13 @@ const heroLinks = SOCIAL_LINKS.slice(0, 3)
         className="relative z-0 -mt-[4px] pt-6"
         data-tui-group-hover-id="hero-info"
     >
+        <div
+            class="border-border text-muted-foreground flex w-full justify-between border-b pb-2 text-xs uppercase"
+        >
+            <span>AARON-WU(1)</span>
+            <span>Generic Manual Page</span>
+            <span>AARON-WU(1)</span>
+        </div>
         <div
             class="grid grid-cols-1 gap-8 p-6 font-mono text-sm leading-relaxed md:grid-cols-[2fr_1fr]"
         >
