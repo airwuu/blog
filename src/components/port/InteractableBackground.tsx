@@ -19,7 +19,7 @@ interface Cell {
     isBlocker: boolean;
     isBorder: boolean;
     borderChar?: string;
-    cardIndex?: number; // Index of the card this cell belongs to (if border/blocker)
+    cardIndex?: number;
 }
 
 interface CardAnimState {

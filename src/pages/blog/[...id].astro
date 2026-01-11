@@ -1,6 +1,7 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Link from '@/components/Link.astro'
+import TuiCard from '@/components/port/TuiCard'
 import PostHead from '@/components/PostHead.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
 import TableOfContents from '@/components/TableOfContents.astro'
@@ -42,94 +43,100 @@ const authors = await parseAuthors(post.data.authors ?? [])
         ]}
       />
     </div>
-    {
-      post.data.image && (
-        <Image
-          src={post.data.image}
-          alt={post.data.title}
-          width={1200}
-          height={630}
-          class="col-span-full mx-auto w-full max-w-5xl object-cover"
-        />
-      )
-    }
-    <section class="col-start-2 flex flex-col gap-y-6 text-center">
-      <div class="flex flex-col">
-        <h1
-          class="mb-2 text-4xl leading-tight font-medium text-pretty sm:text-5xl"
-        >
-          {post.data.title}
-        </h1>
+    <div class="col-start-2">
+      <TuiCard client:load className="flex flex-col gap-y-6 p-8 text-center">
+        {
+          post.data.image && (
+            <Image
+              src={post.data.image}
+              alt={post.data.title}
+              width={1200}
+              height={630}
+              class="border-border mx-auto w-full rounded-md border object-cover"
+            />
+          )
+        }
+        <div class="flex flex-col">
+          <h1
+            class="mb-2 text-4xl leading-tight font-medium text-pretty sm:text-5xl"
+          >
+            {post.data.title}
+          </h1>
 
-        <div
-          class="text-muted-foreground mb-4 flex flex-wrap items-center justify-center gap-2 text-sm"
-        >
-          {
-            authors.length > 0 && (
-              <>
-                <div class="flex items-center gap-x-2">
-                  {authors.map((author) => (
-                    <div class="flex items-center gap-x-1.5">
-                      <Image
-                        src={author.avatar}
-                        alt={author.name}
-                        width={24}
-                        height={24}
-                        class="rounded-full"
-                      />
-                      {author.isRegistered ? (
-                        <Link
-                          href={`/authors/${author.id}`}
-                          underline
-                          class="text-foreground"
-                        >
+          <div
+            class="text-muted-foreground mb-4 flex flex-wrap items-center justify-center gap-2 text-sm"
+          >
+            {
+              authors.length > 0 && (
+                <>
+                  <div class="flex items-center gap-x-2">
+                    {authors.map((author) => (
+                      <div class="flex items-center gap-x-1.5">
+                        <Image
+                          src={author.avatar}
+                          alt={author.name}
+                          width={24}
+                          height={24}
+                          class="rounded-full"
+                        />
+                        {author.isRegistered ? (
+                          <Link
+                            href={`/authors/${author.id}`}
+                            underline
+                            class="text-foreground"
+                          >
+                            <span>{author.name}</span>
+                          </Link>
+                        ) : (
                           <span>{author.name}</span>
-                        </Link>
-                      ) : (
-                        <span>{author.name}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <Separator orientation="vertical" className="!h-4" />
-              </>
-            )
-          }
-          <div class="flex items-center gap-2">
-            <span>{formatDate(post.data.date)}</span>
-            <Separator orientation="vertical" className="!h-4" />
-            <span>{readingTime(post.body!)}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <Separator orientation="vertical" className="!h-4" />
+                </>
+              )
+            }
+            <div class="flex items-center gap-2">
+              <span>{formatDate(post.data.date)}</span>
+              <Separator orientation="vertical" className="!h-4" />
+              <span>{readingTime(post.body!)}</span>
+            </div>
+          </div>
+          <div class="flex flex-wrap justify-center gap-2">
+            {
+              post.data.tags && post.data.tags.length > 0 ? (
+                post.data.tags.map((tag) => (
+                  <a
+                    href={`/tags/${tag}`}
+                    class={badgeVariants({ variant: 'secondary' })}
+                  >
+                    <Icon name="lucide:hash" class="size-3" />
+                    {tag}
+                  </a>
+                ))
+              ) : (
+                <span class="text-muted-foreground text-sm">
+                  No tags available
+                </span>
+              )
+            }
           </div>
         </div>
-        <div class="flex flex-wrap justify-center gap-2">
-          {
-            post.data.tags && post.data.tags.length > 0 ? (
-              post.data.tags.map((tag) => (
-                <a
-                  href={`/tags/${tag}`}
-                  class={badgeVariants({ variant: 'secondary' })}
-                >
-                  <Icon name="lucide:hash" class="size-3" />
-                  {tag}
-                </a>
-              ))
-            ) : (
-              <span class="text-muted-foreground text-sm">
-                No tags available
-              </span>
-            )
-          }
-        </div>
-      </div>
 
-      <PostNavigation prevPost={prev} nextPost={next} />
-    </section>
+        <PostNavigation prevPost={prev} nextPost={next} />
+      </TuiCard>
+    </div>
 
     {headings.length > 0 && <TableOfContents headings={headings} />}
 
-    <article class="prose col-start-2 max-w-none">
-      <Content />
-    </article>
+    <div class="col-start-2">
+      <TuiCard client:load className="p-8 md:p-12">
+        <article class="prose dark:prose-invert max-w-none">
+          <Content />
+        </article>
+      </TuiCard>
+    </div>
 
     <PostNavigation prevPost={prev} nextPost={next} />
   </section>
