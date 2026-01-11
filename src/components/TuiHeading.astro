@@ -1,0 +1,33 @@
+---
+interface Props {
+  level?: 1 | 2 | 3 | 4;
+  class?: string;
+}
+
+const { level = 2, class: className = '' } = Astro.props;
+
+const Tag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4';
+
+const sizeClasses = {
+  1: 'text-4xl',
+  2: 'text-2xl',
+  3: 'text-xl',
+  4: 'text-lg',
+};
+
+const prefixes = {
+  1: '# ',
+  2: '## ',
+  3: '### ',
+  4: '#### ',
+};
+---
+
+<Tag class:list={[
+  'font-medium flex items-center gap-2',
+  sizeClasses[level],
+  className
+]}>
+  <span class="text-secondary opacity-70">{prefixes[level]}</span>
+  <slot />
+</Tag>

@@ -1,0 +1,27 @@
+.ascii-card {
+    position: relative;
+    background: transparent;
+    padding: calc(var(--space-lg) + 8px);
+    /* Extra padding for ASCII border */
+    margin: 4px;
+    /* Space for the border */
+}
+
+.ascii-card-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Override glass-card when used with ascii-card */
+.ascii-card.glass-card {
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.ascii-card.glass-card:hover {
+    background: transparent;
+    transform: none;
+    box-shadow: none;
+}

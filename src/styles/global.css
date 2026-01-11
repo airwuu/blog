@@ -4,8 +4,8 @@
 
 @theme inline {
   --font-sans:
-    Geist, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
   --font-mono:
     Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     'Liberation Mono', 'Courier New', monospace;
@@ -52,19 +52,22 @@
 }
 
 :root {
-  --background: oklch(0.93 0.0177 73.07);
+  --background: oklch(91.689% 0.01765 72.969);
   --foreground: oklch(0.145 0 0);
   --primary: oklch(0.92 0.012 17.37);
   --primary-foreground: oklch(1 0 292);
-  --secondary: oklch(0.6895 0.0484 136.56);
+  --secondary: oklch(67.546% 0.02794 67.266);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(45.316% 0.00005 271.152);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+  --ascii-color: oklch(54.002% 0.00247 15.864);
+  --ascii-bg-color: oklch(77.419% 0.03137 73.767);
+  --ascii-hover-color: oklch(18.242% 0.0115 60.604);
 }
 
 .dark {
@@ -72,8 +75,8 @@
   --foreground: oklch(0.985 0 0);
   --primary: oklch(0.22 0.0051 39.38);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.58 0.0616 141.72);
-  --secondary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.85 0.05 85);
+  --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
@@ -81,9 +84,13 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --ring: oklch(0.556 0 0);
+  --ascii-color: oklch(68.062% 0.016 70.715);
+  --ascii-bg-color: oklch(33.852% 0.01312 57.734);
+  --ascii-hover-color: oklch(91.404% 0.04278 84.561);
 }
 
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -94,6 +101,7 @@
 
   html {
     @apply bg-background text-foreground scheme-light;
+    overscroll-behavior: none;
 
     &.dark {
       @apply scheme-dark;
@@ -105,9 +113,10 @@
   }
 
   .disable-transitions * {
-    @apply transition-none!;
+    @apply !transition-none;
   }
 }
+
 .noise {
   position: relative;
 }
@@ -120,7 +129,7 @@
   width: 100%;
   height: 100%;
   background-color: transparent;
-  opacity: 0.8;
+  opacity: 1;
   pointer-events: none;
   z-index: -1;
   background-image: url('/noise.png');

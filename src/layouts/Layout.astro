@@ -2,37 +2,45 @@
 import '@/styles/global.css'
 import '@/styles/typography.css'
 
+import BackgroundWrapper from '@/components/BackgroundWrapper'
 import Footer from '@/components/Footer.astro'
 import Head from '@/components/Head.astro'
 import Header from '@/components/Header.astro'
 import { SITE } from '@/consts'
 import { cn } from '@/lib/utils'
-import CustomCursor from '../components/Cursor.astro';
-import {ClientRouter} from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions'
 const { isWide = false } = Astro.props
 ---
 
 <!doctype html>
 <html lang={SITE.locale}>
-  
   <Head>
     <slot name="head" />
-    <ClientRouter/>
+    <ClientRouter />
   </Head>
   <body class="noise">
-    <div class="flex h-fit min-h-screen flex-col gap-y-6 font-sans">
-      <Header />
-      <main class="grow">
+    <BackgroundWrapper client:load>
+      <div
+        class="relative z-10 flex h-fit min-h-screen flex-col gap-y-6 font-sans"
+      >
+        <!-- Gradient Mesh for top fade -->
         <div
-          class={cn(
-            'mx-auto flex grow flex-col gap-y-6 px-4',
-            !isWide && 'max-w-3xl',
-          )}
+          class="from-background pointer-events-none fixed top-0 left-0 z-40 h-42 w-full bg-gradient-to-b to-transparent"
         >
-          <slot />
         </div>
-      </main>
-      <Footer />
-    </div>
+        <Header />
+        <main class="grow">
+          <div
+            class={cn(
+              'mx-auto flex grow flex-col gap-y-6 px-4',
+              !isWide && 'max-w-3xl',
+            )}
+          >
+            <slot />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    </BackgroundWrapper>
   </body>
 </html>

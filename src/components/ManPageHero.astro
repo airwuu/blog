@@ -1,0 +1,189 @@
+---
+import Link from '@/components/Link.astro'
+import BorderEraser from '@/components/port/BorderEraser'
+import TuiCard from '@/components/port/TuiCard'
+import TuiHeading from '@/components/TuiHeading.astro'
+import { buttonVariants } from '@/components/ui/button'
+import { ICON_MAP, SOCIAL_LINKS } from '@/consts'
+import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
+
+// Use the first 3 links or all of them if less than 3
+const heroLinks = SOCIAL_LINKS.slice(0, 3)
+---
+
+<div class="flex flex-col">
+    <!-- Tab Section -->
+    <!-- <div class="relative z-10 w-fit">
+        <TuiCard
+            client:load
+            className="compact px-6 pt-6 pb-3"
+            data-tui-group-hover-id="hero-info"
+        >
+            <TuiHeading level={2}>Info</TuiHeading>
+        </TuiCard>
+        <BorderEraser
+            client:load
+            className="absolute right-[4px] -bottom-2 left-[4px] h-4"
+        />
+    </div> -->
+
+    <!-- Body Section -->
+    <TuiCard
+        client:load
+        className="relative z-0 -mt-[4px] pt-6"
+        data-tui-group-hover-id="hero-info"
+    >
+        <div
+            class="border-border text-muted-foreground flex w-full justify-between border-b pb-2 text-xs uppercase"
+        >
+            <span>AARON-WU(1)</span>
+            <span>Generic Manual Page</span>
+            <span>AARON-WU(1)</span>
+        </div>
+        <div
+            class="grid grid-cols-1 gap-8 p-6 font-mono text-sm leading-relaxed md:grid-cols-[2fr_1fr]"
+        >
+            {/* Left Column - Man Page Text */}
+            <div class="order-2 flex flex-col gap-4 md:order-1">
+                <div>
+                    <h3 class="text-secondary mb-1 font-bold uppercase">
+                        NAME
+                    </h3>
+                    <div class="pl-8">
+                        <span class="font-bold">aaron-wu</span> — cat enthusiast,
+                        builder of things
+                    </div>
+                </div>
+
+                <!-- <div>
+                    <h3 class="text-secondary mb-1 font-bold uppercase">
+                        SYNOPSIS
+                    </h3>
+                    <div class="space-y-1 pl-8">
+                        <div>
+                            <span class="font-bold">aaron</span> [<span
+                                class="text-secondary">-v</span
+                            >] [<span class="text-secondary">--coffee</span
+                            >=<span class="italic">CUPS</span>] <span
+                                class="italic">project</span
+                            >
+                        </div>
+                        <div>
+                            <span class="font-bold">aaron</span>
+                            <span class="text-secondary">--pet-cat</span> [<span
+                                class="text-secondary">--repeat</span
+                            >]
+                        </div>
+                    </div>
+                </div> -->
+
+                <div>
+                    <h3 class="text-secondary mb-1 font-bold uppercase">
+                        DESCRIPTION
+                    </h3>
+                    <div class="text-muted-foreground space-y-2 pl-8">
+                        <p>
+                            The result of a kid who fell down a long rabbit hole
+                            trying to "hack" Club Penguin. Has since channeled
+                            that energy into slightly more legitimate pursuits.
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-secondary mb-1 font-bold uppercase">
+                        OPTIONS
+                    </h3>
+                    <div class="text-muted-foreground space-y-2 pl-8">
+                        <div>
+                            <span class="text-secondary font-bold"
+                                >-v, --verbose</span
+                            >
+                            <div class="pl-8">
+                                Enable rambling about random tech topics.
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-secondary font-bold"
+                                >--coffee</span
+                            >=<span class="italic">CUPS</span>
+                            <div class="pl-8">
+                                Set caffeine intake. Default: <span
+                                    class="font-bold">3</span
+                                >. Max: undefined.
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-secondary font-bold"
+                                >--pet-cat</span
+                            >
+                            <div class="pl-8">
+                                Initiate feline interaction subroutine. Highly
+                                recommended.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-secondary mb-1 font-bold uppercase">
+                        SEE ALSO
+                    </h3>
+                    <div class="text-muted-foreground pl-8">
+                        <span class="text-secondary">blog</span>(1),
+                        <span class="text-secondary">projects</span>(1),
+                        <span class="text-secondary">github</span>(1)
+                    </div>
+                </div>
+            </div>
+
+            {/* Right Column - Image & Icons */}
+            <div
+                class="order-1 flex flex-col items-center justify-center gap-8 md:order-2"
+            >
+                <div class="relative h-48 w-48 shrink-0 md:h-56 md:w-56">
+                    <Image
+                        src="/boycat.png"
+                        alt="Aaron Wu with cat"
+                        width={400}
+                        height={400}
+                        class="ml-[16px] h-full w-full rounded-full border-2 border-none object-cover"
+                    />
+                </div>
+
+                <div class="flex gap-4">
+                    {
+                        heroLinks.map(({ href, label }) => (
+                            <Link
+                                href={href}
+                                aria-label={label}
+                                title={label}
+                                class={
+                                    buttonVariants({
+                                        variant: 'outline',
+                                        size: 'icon',
+                                    }) + ' rounded-full'
+                                }
+                                external
+                            >
+                                <Icon
+                                    name={
+                                        ICON_MAP[
+                                            label as keyof typeof ICON_MAP
+                                        ] || 'lucide:link'
+                                    }
+                                    class="size-5"
+                                />
+                            </Link>
+                        ))
+                    }
+                </div>
+            </div>
+
+            <!-- <div class="col-span-full border-t border-border pt-2 text-center uppercase text-xs text-muted-foreground hidden md:block order-3">
+        Aaron Wu Portfolio 2026
+      </div> -->
+        </div>
+    </TuiCard>
+</div>

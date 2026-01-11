@@ -1,126 +1,73 @@
 ---
 import BlogCard from '@/components/BlogCard.astro'
 import Link from '@/components/Link.astro'
+import ManPageHero from '@/components/ManPageHero.astro'
 import PageHead from '@/components/PageHead.astro'
+import TuiCard from '@/components/port/TuiCard'
+import TuiHeading from '@/components/TuiHeading.astro'
 import { buttonVariants } from '@/components/ui/button'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
 import { getRecentPosts } from '@/lib/data-utils'
-import { Image } from 'astro:assets'
-import { ICON_MAP } from '@/consts'
-import type { SocialLink } from '@/types'
-import { Icon } from 'astro-icon/components'
-import { SOCIAL_LINKS } from '@/consts'
-interface Props {
-  links: SocialLink[]
-}
 
-let { links } = Astro.props
-links = SOCIAL_LINKS
 const blog = await getRecentPosts(SITE.featuredPostCount)
 ---
 
 <Layout>
   <PageHead slot="head" title="Home" />
-  <section>
-    <div class="rounded-xl border flex bg-primary-foreground/50 backdrop-blur-sm overflow-hidden">
-      <div class="flex flex-col  space-y-1.5">
-        
+  <section class="">
+    <ManPageHero />
+  </section>
+  <section class="flex flex-col gap-3">
+    <!-- Row 1: Vertical Header + Post 1 -->
+    <div class="flex flex-col md:grid md:grid-cols-[auto_1fr] md:gap-x-6">
+      <div
+        class="relative z-10 flex justify-center md:h-full md:w-fit md:justify-start"
+      >
+        <TuiCard
+          client:load
+          className="compact max-h-fit px-6 pt-6 pb-3 md:flex md:h-full md:rotate-180 md:items-center md:justify-center md:px-3 md:py-6 md:[writing-mode:vertical-rl]"
+        >
+          <TuiHeading level={2}>Latest posts</TuiHeading>
+        </TuiCard>
       </div>
-      <div class="md:pl-9">
-        <div class="flex flex-col space-y-1.5 p-6 pb-4 pt-5">
-          <h3 class="text-4xl leading-none font-medium">Aaron Wu</h3>
-          <p class="text-muted-foreground text-md">
-            <span class="text-lg">[ <span class="italic">air-uhn woo, ar-</span> ]</span> &bull; <span class="text-sm font-semibold uppercase tracking-wider bg-secondary/30 px-2 py-1 rounded">noun</span>
-          </p>
-        </div>
-        <div class="p-6 pt-0 space-y-2">
-          <!-- <p class="text-foreground text-md font-light ">
-            He is the result of a kid who fell down a long long rabbit hole when he tried to "hack" Club Penguin that one time many years ago.   
-          </p> -->
-          <div class="definition-item">
-            <p class="text-foreground">
-              <span class="font-bold text-lg mr-2">1.</span>
-              <span class="font-light">He is the result of a kid who fell down a long long rabbit hole when he tried to "hack" Club Penguin that one time many years ago.</span>
-            </p>
-            <p class="text-sm text-muted-foreground italic ml-6 mt-2">
-              <span class="font-semibold not-italic">Usage:</span> "That's such an <b>Aaron Wu</b> thing to do—learning javascript exploits just for game cosemetics."
-            </p>
+
+      {
+        blog[0] && (
+          <div class="h-full flex-1">
+            <BlogCard entry={blog[0]} className="h-full" />
           </div>
-          <div class="definition-item">
-            <p class="text-foreground">
-              <span class="font-bold text-lg mr-2">2.</span>
-              <span class="font-light">A sentient being in an active state of opportunity-seeking, particularly in domains involving feline interaction.</span>
-            </p>
-            <p class="text-sm text-muted-foreground italic ml-6 mt-2">
-              <span class="font-semibold not-italic">Synonyms:</span> cat appreciator, lifetime learner, also someone who sometimes writes a lot of code
-            </p>
-          </div>
-          <p class="text-foreground text-md font-light italic">
-            Note: He is based in <u><a href="https://www.google.com/search?q=San+Diego">San Diego</a></u> and <u><a href="https://www.google.com/search?q=Bay Area,California">the Bay Area</a></u>
-          </p>
-        </div>
-      </div>
-      <div class="flex items-center justify-center w-full max-w-1/6">
-        <div class="flex flex-col justify-between space-y-10">
-          <div class="absolute md:w-35 w-25">
-              <Image
-              src="/boycat.png"
-              alt="boy"
-              width={1200}
-              height={630}
-              class="absolute object-cover md:-translate-x-13 -translate-x-10 md:-translate-y-13 -translate-y-32"
-              />
-          </div>
-          <ul class="flex flex-col gap-5 pt-25" role="list">
-            {
-              links.map(({ href, label }) => (
-                <li class="hover:bg-secondary rounded-md transition transition-duration-300 ease-in-out">
-                  <Link
-                    href={href}
-                    aria-label={label}
-                    title={label}
-                    class={buttonVariants({ variant: 'ghost', size: 'icon' })}
-                    external
-                  >
-                    <Icon
-                      name={
-                        ICON_MAP[label as keyof typeof ICON_MAP] ||
-                        'lucide:message-circle-question'
-                      }
-                      class="size-4"
-                    />
-                  </Link>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      </div>
+        )
+      }
     </div>
 
-  </section>
-  <section class="flex flex-col gap-y-2">
-    <h2 class="text-2xl font-medium">Latest posts</h2>
-    <ul class="flex flex-col gap-y-4">
+    <!-- Row 2: Post 2 + Vertical Button -->
+    <div class="flex flex-col gap-4 md:grid md:grid-cols-[1fr_auto] md:gap-x-6">
       {
-        blog.map((post) => (
-          <li>
-            <BlogCard entry={post} />
-          </li>
-        ))
+        blog[1] && (
+          <div class="md:flex-1">
+            <BlogCard entry={blog[1]} />
+          </div>
+        )
       }
-    </ul>
-    <div class="flex justify-center">
-      <Link
-        href="/blog"
-        class={buttonVariants({ variant: 'ghost' }) + ' group'}
-      >
-        See all posts <span
-          class="ml-1.5 transition-transform group-hover:translate-x-1"
-          >&rarr;</span
+
+      <div class="z-10 flex justify-center md:w-fit md:justify-start">
+        <TuiCard
+          client:load
+          className="group-button compact px-6 pt-6 pb-3 md:flex md:rotate-180 md:items-center md:justify-center md:px-3 md:py-6 md:[writing-mode:vertical-rl]"
         >
-      </Link>
+          <Link
+            href="/blog"
+            class={buttonVariants({ variant: 'ghost' }) +
+              ' group hover:bg-transparent whitespace-nowrap !p-0 !h-auto text-base font-semibold'}
+          >
+            See all posts <span
+              class="ml-1.5 inline-block transition-transform group-hover:translate-x-1 md:rotate-90 md:group-hover:translate-x-0 md:group-hover:translate-y-1"
+              >&rarr;</span
+            >
+          </Link>
+        </TuiCard>
+      </div>
     </div>
   </section>
 </Layout>

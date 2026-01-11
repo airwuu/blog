@@ -2,6 +2,7 @@
 import { createHash } from 'node:crypto';
 import AvatarComponent from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import TuiCard from './port/TuiCard'
 
 interface TimelinePost {
   id: number;
@@ -25,31 +26,32 @@ function createGravatarUrl(email: string): string {
 const gravatarUrl = createGravatarUrl(email);
 ---
 
-<div
-  class="bg-primary-foreground/50 backdrop-blur-sm overflow-hidden rounded-xl border p-4 transition-colors duration-300 ease-in-out"
->
-  <div class="flex flex-wrap gap-4">
-    <AvatarComponent
-      client:load
-      src={gravatarUrl}
-      alt={`Avatar of ${name}`}
-      fallback={name[0]}
-      className={cn(
-          'size-24 rounded-md [&>[data-slot="avatar-fallback"]]:rounded-md',
-            'hover:ring-primary transition-shadow duration-300 hover:cursor-pointer hover:ring-2',
-        )}
-    />
-    <div class="flex grow flex-col justify-between gap-y-2">
-      <div>
-        <div class="flex flex-wrap items-center justify-between gap-x-2">
-            <h3 class="text-lg font-medium">{name}</h3>
-            {
-                <span class="text-muted-foreground text-sm">({new Date(created_at).toLocaleString()})</span>
-            }
+<TuiCard client:load>
+  <div class="p-4">
+    <div class="flex flex-wrap gap-4">
+      <AvatarComponent
+        client:load
+        src={gravatarUrl}
+        alt={`Avatar of ${name}`}
+        fallback={name[0]}
+        className={cn(
+            'size-24 rounded-md [&>[data-slot="avatar-fallback"]]:rounded-md',
+              'hover:ring-primary transition-shadow duration-300 hover:cursor-pointer hover:ring-2',
+          )}
+      />
+      <div class="flex grow flex-col justify-between gap-y-2">
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-x-2">
+              <h3 class="text-lg font-medium">{name}</h3>
+              {
+                  <span class="text-muted-foreground text-sm">({new Date(created_at).toLocaleString()})</span>
+              }
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">{email}</p>
+          <p class="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{content}</p>
         </div>
-        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">{email}</p>
-        <p class="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{content}</p>
       </div>
     </div>
-    </div>
-</div>
+  </div>
+</TuiCard>
+
