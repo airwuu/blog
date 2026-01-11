@@ -120,7 +120,7 @@ export default function InteractableBackground() {
                 bg: style.getPropertyValue('--background') || '#000000',
                 fg: style.getPropertyValue('--ascii-bg-color') || style.getPropertyValue('--foreground') || '#ffffff',
                 border: style.getPropertyValue('--ascii-color') || style.getPropertyValue('--foreground') || '#ffffff',
-                accent: style.getPropertyValue('--secondary') || '#00ff00',
+                accent: style.getPropertyValue('--ascii-hover-color') || style.getPropertyValue('--foreground') || '#000000',
             });
         };
         updateTheme();

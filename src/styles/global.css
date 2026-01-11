@@ -52,7 +52,7 @@
 }
 
 :root {
-  --background: oklch(0.93 0.0177 73.07);
+  --background: oklch(91.689% 0.01765 72.969);
   --foreground: oklch(0.145 0 0);
   --primary: oklch(0.92 0.012 17.37);
   --primary-foreground: oklch(1 0 292);
@@ -65,8 +65,9 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --ascii-color: oklch(22.438% 0.00311 16.938);
-  --ascii-bg-color: oklch(81.084% 0.03156 76.884);
+  --ascii-color: oklch(54.002% 0.00247 15.864);
+  --ascii-bg-color: oklch(77.419% 0.03137 73.767);
+  --ascii-hover-color: oklch(18.242% 0.0115 60.604);
 }
 
 .dark {
@@ -85,6 +86,7 @@
   --ring: oklch(0.556 0 0);
   --ascii-color: oklch(68.062% 0.016 70.715);
   --ascii-bg-color: oklch(33.852% 0.01312 57.734);
+  --ascii-hover-color: oklch(91.404% 0.04278 84.561);
 }
 
 @layer base {
