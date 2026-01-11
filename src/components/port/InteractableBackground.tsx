@@ -5,46 +5,38 @@ import { useCardRegistry } from './CardRegistry';
  * InteractableBackground.tsx
  * 
  * Implements a dynamic ASCII background with:
- * - Wave simulation (fluid energy flow)
- * - Mouse interaction
+ * - Ambient "Blob" animation (plasma/noise effect)
+ * - Wave simulation (fluid energy flow from mouse)
+ * - Dynamic Character Set mapping (energy -> char)
  * - "Pooling" blocking effect against TuiCards
  * - Glowing ASCII borders
  */
 
-interface Point {
-    x: number;
-    y: number;
-}
-
 interface Cell {
-    energy: number;     // Current energy/brightness
-    prevEnergy: number; // For verlet/wave physics
+    energy: number;     // Current energy (physics + ambient)
+    waveEnergy: number; // Just the wave/mouse energy part
+    prevWaveEnergy: number;
     char: string;
     isBlocker: boolean;
     isBorder: boolean;
-    borderChar?: string; // |, -, +, etc.
+    borderChar?: string;
 }
+
+// Density string for energy mapping
+const CHARS = '·,:+*x#%@'; // Low to high energy
 
 export default function InteractableBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const registry = useCardRegistry();
     const [themeColors, setThemeColors] = useState({ bg: '#000000', fg: '#ffffff', accent: '#33ff33' });
 
-    // Configuration
-    const CELL_SIZE = 16; // px
+    const CELL_SIZE = 16;
     const FONT_SIZE = 12;
-    const DAMPING = 0.96; // Wave decay
-    const NEIGHBOR_FLOW = 0.2; // How much energy flows to neighbors
+    const DAMPING = 0.96;
 
     useEffect(() => {
-        // Resolve theme colors from CSS variables
         const updateTheme = () => {
             const style = getComputedStyle(document.body);
-            // We use a canvas trick or just standard conversion if possible. 
-            // Since oklch is tricky in canvas on some browsers, we might rely on the browser resolving it if we set it as fillStyle.
-            // But for clearRect we need dimensions. 
-            // For now, let's just use the variable strings directly in fillStyle where supported, 
-            // or fallback to basic detection.
             setThemeColors({
                 bg: style.getPropertyValue('--background') || '#000000',
                 fg: style.getPropertyValue('--foreground') || '#ffffff',
@@ -52,11 +44,9 @@ export default function InteractableBackground() {
             });
         };
         updateTheme();
-        window.addEventListener('resize', updateTheme); // Also updates on theme toggle technically if it triggers resize
-
+        window.addEventListener('resize', updateTheme);
         const observer = new MutationObserver(updateTheme);
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-
         return () => {
             window.removeEventListener('resize', updateTheme);
             observer.disconnect();
@@ -66,7 +56,7 @@ export default function InteractableBackground() {
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        const ctx = canvas.getContext('2d', { alpha: false }); // Performance optimization
+        const ctx = canvas.getContext('2d', { alpha: false });
         if (!ctx) return;
 
         let animationFrameId: number;
@@ -74,31 +64,24 @@ export default function InteractableBackground() {
         let rows = 0;
         let grid: Cell[] = [];
         let mousePos = { x: -1000, y: -1000 };
+        let time = 0; // For ambient noise
 
-        // Resize handler
         const handleResize = () => {
-            // Handle high DPI displays
             const dpr = window.devicePixelRatio || 1;
-            const rect = canvas.getBoundingClientRect();
-
             canvas.width = window.innerWidth * dpr;
             canvas.height = window.innerHeight * dpr;
-
-            // CSS size
             canvas.style.width = `${window.innerWidth}px`;
             canvas.style.height = `${window.innerHeight}px`;
-
             ctx.scale(dpr, dpr);
 
-            // Re-calc grid dimensions
             cols = Math.ceil(window.innerWidth / CELL_SIZE) + 1;
             rows = Math.ceil(window.innerHeight / CELL_SIZE) + 1;
 
-            // Initialize grid
             grid = new Array(cols * rows).fill(null).map(() => ({
                 energy: 0,
-                prevEnergy: 0,
-                char: '.',
+                waveEnergy: 0,
+                prevWaveEnergy: 0,
+                char: CHARS[0],
                 isBlocker: false,
                 isBorder: false,
             }));
@@ -107,24 +90,17 @@ export default function InteractableBackground() {
         handleResize();
         window.addEventListener('resize', handleResize);
 
-        // Mouse tracking
         const handleMouseMove = (e: MouseEvent) => {
             mousePos.x = e.clientX;
             mousePos.y = e.clientY;
         };
         window.addEventListener('mousemove', handleMouseMove);
 
-
         const render = () => {
+            time += 0.01;
             const bounds = registry.getCardBounds();
 
-            // 1. Update Grid State (Identify blockers/borders from registry)
-            // This needs to be efficient. We map cards to grid cells.
-
-            // Reset blockers/borders first
-            // Optimization: Only reset if bounds changed or periodically. 
-            // For fluid UI, we can do it every frame or every few frames.
-            // Let's do it every frame for smoothness with moving cards, but optimize the loops.
+            // 1. Identify Blockers/Borders
             for (let i = 0; i < grid.length; i++) {
                 grid[i].isBlocker = false;
                 grid[i].isBorder = false;
@@ -133,20 +109,16 @@ export default function InteractableBackground() {
 
             bounds.forEach(rect => {
                 if (!rect.isBlocker) return;
-
-                // Convert rect to grid coords
                 const startX = Math.floor(rect.x / CELL_SIZE);
                 const endX = Math.floor(rect.right / CELL_SIZE);
                 const startY = Math.floor(rect.y / CELL_SIZE);
                 const endY = Math.floor(rect.bottom / CELL_SIZE);
 
-                // Mark grid cells
                 for (let y = startY; y <= endY; y++) {
                     for (let x = startX; x <= endX; x++) {
                         if (x < 0 || x >= cols || y < 0 || y >= rows) continue;
                         const idx = y * cols + x;
 
-                        // Check if it's a border cell
                         const isTop = y === startY;
                         const isBottom = y === endY;
                         const isLeft = x === startX;
@@ -154,7 +126,6 @@ export default function InteractableBackground() {
 
                         if (isTop || isBottom || isLeft || isRight) {
                             grid[idx].isBorder = true;
-                            // Determine border char (corner logic)
                             if (isTop && isLeft) grid[idx].borderChar = '+';
                             else if (isTop && isRight) grid[idx].borderChar = '+';
                             else if (isBottom && isLeft) grid[idx].borderChar = '+';
@@ -168,42 +139,34 @@ export default function InteractableBackground() {
                 }
             });
 
-
-            // 2. Physics Simulation (Wave Propagation)
-            // convert mouse pos to grid
+            // 2. Physics & Ambient Calculation
             const mouseGridX = Math.floor(mousePos.x / CELL_SIZE);
             const mouseGridY = Math.floor(mousePos.y / CELL_SIZE);
 
-            // Apply mouse energy
             if (mouseGridX >= 0 && mouseGridX < cols && mouseGridY >= 0 && mouseGridY < rows) {
                 const idx = mouseGridY * cols + mouseGridX;
-                grid[idx].energy = Math.min(grid[idx].energy + 2, 5); // Add energy cap
+                grid[idx].waveEnergy = Math.min(grid[idx].waveEnergy + 5.0, 10);
             }
 
-            // Buffer for next state to avoid reading updated values in same pass
-            const nextEnergies = new Float32Array(grid.length);
+            const nextWaveEnergies = new Float32Array(grid.length);
 
             for (let y = 0; y < rows; y++) {
                 for (let x = 0; x < cols; x++) {
                     const idx = y * cols + x;
                     const cell = grid[idx];
 
-                    // If inside blocker, energy dies immediately
                     if (cell.isBlocker) {
-                        nextEnergies[idx] = 0;
+                        nextWaveEnergies[idx] = 0;
                         continue;
                     }
 
-                    // Propagate
-                    // Simple averaging/diffusion
-                    let sum = cell.energy;
+                    // --- Wave Propagation ---
+                    let sum = cell.waveEnergy;
                     let count = 1;
 
                     const neighbors = [
-                        { dx: 0, dy: -1 }, // N
-                        { dx: 0, dy: 1 },  // S
-                        { dx: -1, dy: 0 }, // W
-                        { dx: 1, dy: 0 }   // E
+                        { dx: 0, dy: -1 }, { dx: 0, dy: 1 },
+                        { dx: -1, dy: 0 }, { dx: 1, dy: 0 }
                     ];
 
                     for (const { dx, dy } of neighbors) {
@@ -214,44 +177,48 @@ export default function InteractableBackground() {
                             const nIdx = ny * cols + nx;
                             const neighbor = grid[nIdx];
 
-                            // Essential "Pooling" Logic:
-                            // If neighbor is a BLOCKER, we treat it as a wall.
-                            // We reflect energy back or accumulate it here.
-                            // Simplified: We don't take energy FROM blocker, we just don't give it.
-                            // But if we want pooling, being Next to a blocker should Keep energy higher.
-
                             if (neighbor.isBlocker) {
-                                // "Bounce" - Artificially increase own energy slightly to simulate accumulation?
-                                // Or just don't lose energy to that side.
-                                // Let's try: Don't count it in average (effectively insulation) 
-                                // AND add a small reflection bonus if we have energy
-                                if (cell.energy > 0.1) {
-                                    sum += cell.energy * 0.1; // Accumulate against wall
+                                // "Pool" against the blocker wall
+                                if (cell.waveEnergy > 0.1) {
+                                    sum += cell.waveEnergy * 0.15; // Reflect/Pool
                                 }
                             } else {
-                                sum += neighbor.energy;
+                                sum += neighbor.waveEnergy;
                                 count++;
                             }
                         }
                     }
 
                     const average = sum / count;
-                    // Move towards average but keep some momentum (not implementing full verlet for simplicity/stability)
-                    // Just simple diffusion + decay
-                    nextEnergies[idx] = average * DAMPING;
+                    nextWaveEnergies[idx] = average * DAMPING;
+
+                    // --- Ambient Noise ("Blobs") ---
+                    // Simple plasma: combination of sines
+                    // Scale coords for smoother noise
+                    const nx = x * 0.1;
+                    const ny = y * 0.1;
+                    const v = Math.sin(nx + time) +
+                        Math.sin(ny + time) +
+                        Math.sin((nx + ny + time) * 0.5);
+                    // Map v (-3 to 3) to 0-1 range roughly, then scale
+                    const ambient = (v + 3) / 6; // 0.0 to 1.0
+
+                    // Final Energy Composition
+                    // Add wave energy on top of ambient
+                    // Ambient is low-level (0.0 - 0.3), Wave is high-level (0.0 - 1.0+)
+
+                    grid[idx].energy = (ambient * 0.3) + nextWaveEnergies[idx];
                 }
             }
 
-            // Apply next energies
+            // Commit next state
             for (let i = 0; i < grid.length; i++) {
-                grid[i].energy = nextEnergies[i];
+                grid[i].waveEnergy = nextWaveEnergies[i];
             }
 
-
             // 3. Draw
-            // Clear background
             ctx.fillStyle = themeColors.bg;
-            ctx.fillRect(0, 0, canvas.width, canvas.height); // Use full buffer size
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             ctx.font = `${FONT_SIZE}px monospace`;
             ctx.textBaseline = 'middle';
@@ -262,42 +229,36 @@ export default function InteractableBackground() {
                     const idx = y * cols + x;
                     const cell = grid[idx];
 
-                    if (cell.isBlocker) continue; // Don't draw inside cards
+                    if (cell.isBlocker) continue;
 
                     const px = x * CELL_SIZE + CELL_SIZE / 2;
                     const py = y * CELL_SIZE + CELL_SIZE / 2;
 
-                    let char = '.';
-                    let alpha = 0.2;
+                    let char = CHARS[0];
+                    let alpha = 0.15;
                     let color = themeColors.fg;
 
-                    // Visualize Energy
                     if (cell.isBorder) {
                         char = cell.borderChar || '+';
-                        // Border glows with energy
-                        // Base visibility + energy boost
-                        alpha = 0.3 + (cell.energy * 0.8);
+                        // Border glow based on wave energy primarily, plus some ambient
+                        const borderEnergy = cell.energy * 2.0;
+                        alpha = 0.2 + (borderEnergy * 0.8);
                         if (alpha > 1) alpha = 1;
-                        // Color shift for high energy borders
-                        if (cell.energy > 0.5) {
-                            color = themeColors.accent; // Glow color
-                        }
+                        if (borderEnergy > 0.6) color = themeColors.accent;
                     } else {
-                        // Background cells
-                        if (cell.energy > 0.1) {
-                            char = '+';
-                            alpha = 0.2 + (cell.energy * 0.5);
-                        } else {
-                            char = '.';
-                            alpha = 0.1; // Dim base
-                        }
+                        // Map energy to char
+                        const energy = Math.max(0, Math.min(1, cell.energy));
+                        // Quantize energy to char index
+                        const charIndex = Math.floor(energy * (CHARS.length - 1));
+                        char = CHARS[charIndex];
+
+                        // Alpha follows energy too
+                        alpha = 0.1 + (energy * 0.7);
                     }
 
-                    // Cap alpha
                     if (alpha > 1) alpha = 1;
 
-                    // Draw
-                    ctx.fillStyle = color; // Uses css var string or hex
+                    ctx.fillStyle = color;
                     ctx.globalAlpha = alpha;
                     ctx.fillText(char, px, py);
                 }
@@ -306,7 +267,6 @@ export default function InteractableBackground() {
 
             animationFrameId = requestAnimationFrame(render);
         };
-
         render();
 
         return () => {
@@ -314,7 +274,7 @@ export default function InteractableBackground() {
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('mousemove', handleMouseMove);
         };
-    }, [themeColors, registry]); // Re-bind if theme changes
+    }, [themeColors, registry]);
 
     return (
         <canvas
