@@ -39,7 +39,7 @@ export default function InteractableBackground() {
             const style = getComputedStyle(document.body);
             setThemeColors({
                 bg: style.getPropertyValue('--background') || '#000000',
-                fg: style.getPropertyValue('--foreground') || '#ffffff',
+                fg: style.getPropertyValue('--ascii-color') || style.getPropertyValue('--foreground') || '#ffffff',
                 accent: style.getPropertyValue('--secondary') || '#00ff00',
             });
         };
@@ -178,10 +178,10 @@ export default function InteractableBackground() {
                             const neighbor = grid[nIdx];
 
                             if (neighbor.isBlocker) {
-                                // "Pool" against the blocker wall
-                                if (cell.waveEnergy > 0.1) {
-                                    sum += cell.waveEnergy * 0.15; // Reflect/Pool
-                                }
+                                // Blockers act as insulators - no energy flow into them
+                                // We simply don't add them to the average calculation
+                                // This causes energy to "stick" in cells near borders (pooling)
+                                // without creating an unstable feedback loop.
                             } else {
                                 sum += neighbor.waveEnergy;
                                 count++;
@@ -237,7 +237,7 @@ export default function InteractableBackground() {
                     let char = CHARS[0];
                     let alpha = 0.15;
                     let color = themeColors.fg;
-
+                    // Visualize Energy
                     if (cell.isBorder) {
                         char = cell.borderChar || '+';
                         // Border glow based on wave energy primarily, plus some ambient
@@ -256,8 +256,22 @@ export default function InteractableBackground() {
                         alpha = 0.1 + (energy * 0.7);
                     }
 
-                    if (alpha > 1) alpha = 1;
+                    // --- Fade Mask for Navbar ---
+                    // Fade out the top 120px
+                    const fadeStart = 120;
+                    if (py < fadeStart) {
+                        const fadeFactor = Math.max(0, py / fadeStart);
+                        // Apply cubic easing for smoother fade
+                        const easedFade = fadeFactor * fadeFactor * fadeFactor;
+                        alpha *= easedFade;
 
+                        // Also dim/change char if heavily faded?
+                        // Just alpha is cleaner for "dissipating"
+                        if (alpha < 0.01) char = ''; // Don't draw if invisible
+                    }
+
+                    // Cap alpha
+                    if (alpha > 1) alpha = 1;
                     ctx.fillStyle = color;
                     ctx.globalAlpha = alpha;
                     ctx.fillText(char, px, py);
