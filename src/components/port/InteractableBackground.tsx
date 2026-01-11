@@ -364,7 +364,13 @@ export default function InteractableBackground() {
                                 let isDarkened = false;
                                 if (!state.isHovered) {
                                     const distToDark = minDist(cellPos, state.darkCenter);
-                                    isDarkened = distToDark < state.darkCoverage;
+                                    // REVERSED LOGIC:
+                                    // Instead of darkness pushing OUT from center (dist < cov),
+                                    // We want light to be PULLED IN to center.
+                                    // Light exists only if dist < (Max - cov).
+                                    // So Dark if dist > (Max - cov).
+                                    const validRadius = 0.55 - state.darkCoverage;
+                                    isDarkened = distToDark > validRadius;
                                 }
 
                                 if (isLit && !isDarkened) {
