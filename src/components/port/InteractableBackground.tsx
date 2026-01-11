@@ -103,7 +103,7 @@ function minDist(a: number, b: number): number {
 export default function InteractableBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const registry = useCardRegistry() as CardRegistry;
-    const [themeColors, setThemeColors] = useState({ bg: '#000000', fg: '#ffffff', accent: '#33ff33' });
+    const [themeColors, setThemeColors] = useState({ bg: '#000000', fg: '#ffffff', border: '#ffffff', accent: '#33ff33' });
 
     // Animation states stored in a ref to persist across renders without re-triggering
     const animStatesRef = useRef<Map<number, CardAnimState>>(new Map());
@@ -118,7 +118,8 @@ export default function InteractableBackground() {
             const style = getComputedStyle(document.body);
             setThemeColors({
                 bg: style.getPropertyValue('--background') || '#000000',
-                fg: style.getPropertyValue('--ascii-color') || style.getPropertyValue('--foreground') || '#ffffff',
+                fg: style.getPropertyValue('--ascii-bg-color') || style.getPropertyValue('--foreground') || '#ffffff',
+                border: style.getPropertyValue('--ascii-color') || style.getPropertyValue('--foreground') || '#ffffff',
                 accent: style.getPropertyValue('--secondary') || '#00ff00',
             });
         };
@@ -375,7 +376,7 @@ export default function InteractableBackground() {
 
                     let char = CHARS[0];
                     let alpha = 0.15;
-                    let color = themeColors.fg;
+                    let color = themeColors.border;
 
                     if (cell.isBorder) {
                         char = cell.borderChar || '+';
@@ -422,6 +423,7 @@ export default function InteractableBackground() {
                         if (borderEnergy > 0.6) color = themeColors.accent;
 
                     } else {
+                        color = themeColors.fg;
                         const energy = Math.max(0, Math.min(1, cell.energy));
                         const charIndex = Math.floor(energy * (CHARS.length - 1));
                         char = CHARS[charIndex];

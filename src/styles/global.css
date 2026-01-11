@@ -66,6 +66,7 @@
   --border: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --ascii-color: oklch(38.288% 0.00004 271.152);
+  --ascii-bg-color: oklch(38.288% 0.00004 271.152);
 }
 
 .dark {
@@ -82,7 +83,8 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --ring: oklch(0.556 0 0);
-  --ascii-color: oklch(52.081% 0.00006 271.152);
+  --ascii-color: oklch(68.062% 0.016 70.715);
+  --ascii-bg-color: oklch(33.852% 0.01312 57.734);
 }
 
 @layer base {
