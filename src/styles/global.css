@@ -65,8 +65,8 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --ascii-color: oklch(38.288% 0.00004 271.152);
-  --ascii-bg-color: oklch(38.288% 0.00004 271.152);
+  --ascii-color: oklch(22.438% 0.00311 16.938);
+  --ascii-bg-color: oklch(81.084% 0.03156 76.884);
 }
 
 .dark {
@@ -127,7 +127,7 @@
   width: 100%;
   height: 100%;
   background-color: transparent;
-  opacity: 0.8;
+  opacity: 1;
   pointer-events: none;
   z-index: -1;
   background-image: url('/noise.png');

@@ -350,7 +350,7 @@ export default function InteractableBackground() {
                     const ny = y * 0.1;
                     const v = Math.sin(nx + time) + Math.sin(ny + time) + Math.sin((nx + ny + time) * 0.5);
                     const ambient = (v + 3) / 6;
-                    grid[idx].energy = (ambient * 0.3) + nextWaveEnergies[idx];
+                    grid[idx].energy = (ambient * 0.5) + nextWaveEnergies[idx];
                 }
             }
             for (let i = 0; i < grid.length; i++) grid[i].waveEnergy = nextWaveEnergies[i];
@@ -427,7 +427,7 @@ export default function InteractableBackground() {
                         const energy = Math.max(0, Math.min(1, cell.energy));
                         const charIndex = Math.floor(energy * (CHARS.length - 1));
                         char = CHARS[charIndex];
-                        alpha = 0.1 + (energy * 0.7);
+                        alpha = 0.2 + (energy * 0.7);
                     }
 
                     // Navbar Fade
