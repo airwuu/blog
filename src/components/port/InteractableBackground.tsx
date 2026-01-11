@@ -30,6 +30,26 @@ interface CardAnimState {
     isHovered: boolean;
 }
 
+interface CardBounds {
+    x: number;
+    y: number;
+    right: number;
+    bottom: number;
+    width: number;
+    height: number;
+    isBlocker: boolean;
+    isBorderEraser: boolean;
+    groupId: string | null;
+}
+
+interface CardRegistry {
+    getCardBounds: () => CardBounds[];
+    getHoveredCardIndex: () => number;
+    register: (id: string, element: HTMLElement | null) => void;
+    unregister: (id: string) => void;
+    subscribe: (listener: () => void) => () => void;
+}
+
 // Density string for energy mapping
 const CHARS = '·,:+*x#%@';
 
@@ -82,7 +102,7 @@ function minDist(a: number, b: number): number {
 
 export default function InteractableBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const registry = useCardRegistry();
+    const registry = useCardRegistry() as CardRegistry;
     const [themeColors, setThemeColors] = useState({ bg: '#000000', fg: '#ffffff', accent: '#33ff33' });
 
     // Animation states stored in a ref to persist across renders without re-triggering
