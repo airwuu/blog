@@ -12,15 +12,16 @@ import TuiCard from './port/TuiCard'
 
 interface Props {
   entry: CollectionEntry<'blog'>
+  className?: string
 }
 
-const { entry } = Astro.props
+const { entry, className = '' } = Astro.props
 const formattedDate = formatDate(entry.data.date)
 const readTime = readingTime(entry.body!)
 const authors = await parseAuthors(entry.data.authors ?? [])
 ---
 
-<TuiCard client:load>
+<TuiCard client:load className={className}>
   <div class="p-4">
     <Link
       href={`/${entry.collection}/${entry.id}`}
@@ -28,7 +29,7 @@ const authors = await parseAuthors(entry.data.authors ?? [])
     >
       {
         entry.data.image && (
-          <div class="max-w-3xs sm:shrink-0">
+          <div class="w-full sm:w-48 sm:shrink-0">
             <Image
               src={entry.data.image}
               alt={entry.data.title}
@@ -42,7 +43,9 @@ const authors = await parseAuthors(entry.data.authors ?? [])
 
       <div class="grow">
         <h3 class="mb-1 text-lg font-medium">{entry.data.title}</h3>
-        <p class="text-muted-foreground mb-2 text-sm">{entry.data.description}</p>
+        <p class="text-muted-foreground mb-2 text-sm">
+          {entry.data.description}
+        </p>
 
         <div
           class="text-muted-foreground mb-2 flex flex-wrap items-center gap-x-2 text-xs"
@@ -75,7 +78,10 @@ const authors = await parseAuthors(entry.data.authors ?? [])
           entry.data.tags && (
             <div class="flex flex-wrap gap-2">
               {entry.data.tags.map((tag) => (
-                <Badge variant="secondary" className="flex items-center gap-x-1 bg-secondary/50">
+                <Badge
+                  variant="secondary"
+                  className="flex items-center gap-x-1 bg-secondary/50"
+                >
                   <Icon name="lucide:hash" class="size-3" />
                   {tag}
                 </Badge>
@@ -87,4 +93,3 @@ const authors = await parseAuthors(entry.data.authors ?? [])
     </Link>
   </div>
 </TuiCard>
-

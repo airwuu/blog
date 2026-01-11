@@ -409,7 +409,7 @@ export default function InteractableBackground() {
                     }
 
                     // Navbar Fade
-                    const fadeStart = 120;
+                    const fadeStart = 20;
                     if (py < fadeStart) {
                         const fadeFactor = Math.max(0, py / fadeStart);
                         alpha *= (fadeFactor * fadeFactor * fadeFactor);
