@@ -55,7 +55,7 @@ Poetry basically just abstracts away the workflow I described above. This four s
 
 becomes simply `poetry add <package>`. If you have a virtual environment in the project, it will use it automatically. If not, it will automatically create one in a special cache location. 
 By running `poetry run python script.py`, it will automatically enter that virtual environment. 
-Dependencies are specificied in a section in the `pyproject.toml` file (kind of like how I used `requirements.txt`), and the specific versions are hashed in a `poetry.lock` file for deterministic builds. 
+Dependencies are specified in a section in the `pyproject.toml` file (kind of like how I used `requirements.txt`), and the specific versions are hashed in a `poetry.lock` file for deterministic builds. 
 
 So the key features are deterministic builds, better dependency management, automatic virtual environments, and a simpler way to build/publish packages. All this while maintaining an easier user experience.
 
@@ -199,7 +199,7 @@ quote-style = "single"
 Honestly, I don't have much to say, as my scripts are quite simple and short. Apparently, ruff can be 10-100x faster than other formatters and linters. I'll start running `ruff check` and `ruff format` from time to time though.
 
 # type checker and LSP
-Finally, I thought that I might as well and see the last tool Astral has to offer. The last tool is ty, which is a type checker and LSP that actually came out in the last month as of the time of writing this. Now type checkers are great because they help you catch some errors early, but I didn't expect it to look like Rust. Or maybe I should've, since I'm going to also assume it\'s written in Rust. 
+Finally, I thought that I might as well see the last tool Astral has to offer. The last tool is ty, which is a type checker and LSP that actually came out in the last month as of the time of writing this. Now type checkers are great because they help you catch some errors early, but I didn't expect it to look like Rust. Or maybe I should've, since I'm going to also assume it\'s written in Rust. 
 
 Here's my dummy code with some type hinting. The last parameter `style` should be a str:
 ```py title="example.py"
@@ -250,7 +250,7 @@ info: rule `invalid-argument-type` is enabled by default
 Found 2 diagnostics
 ```
 
-The underlining of multiple parts of the same line is so great. I can see this being pretty useful in preventing some runtime issues, so I'll definitely consider using this for the future. Alternatives like mypy seem to be slower and much more concise in the type checker output. If this is your preference, it seems that ty can also have a concise flag turned on.
+It correctly highlights the errors and the underlining of multiple parts of the same line is so great. I can see this being pretty useful in preventing some runtime issues, so I'll definitely consider using this for the future. Alternatives like mypy seem to be slower and much more concise in the type checker output. If this is your preference, it seems that ty can also have a concise flag turned on.
 
 Lastly, there is the LSP. I do not use LSP unless I am on VS Code, and even then I mostly ignore it. So, I don't have much to say.
 
