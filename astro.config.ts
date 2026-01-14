@@ -55,7 +55,7 @@ export default defineConfig({
           editorTabBarBorderBottomColor: 'transparent',
           frameBoxShadowCssValue: 'none',
           terminalBackground: 'var(--terminal-bg)',
-          terminalTitlebarBackground: 'transparent',
+          terminalTitlebarBackground: 'var(--terminal-header-bg)',
           terminalTitlebarBorderBottomColor: 'transparent',
           terminalTitlebarForeground: 'var(--muted-foreground)',
         },
