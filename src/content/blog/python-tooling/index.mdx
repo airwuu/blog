@@ -1,0 +1,260 @@
+---
+title: 'I Tried Modern Python Tooling'
+description: 'Maybe it is time for me to switch off pip and venv'
+date: 2026-01-11
+tags: ['tech']
+image: './w.jpg'
+authors: ['airwu']
+---
+
+# how it started
+I had a brief conversation with a friend about successful open source projects. During the discussion, he brought
+up Astral.sh, which is a company known for its popular open source python tooling that pairs nicely with their paid services. 
+
+This conversation made me curious about the current state of python tooling, as I had never really explored this space before.
+In fact, almost every single python project I have ever made, followed the "old" way of doing things.
+
+# older python tooling
+Firstly, here's how I would start a Python project:
+```sh
+# 1. Create the environment
+python -m venv venv
+
+# 2. Activate the environment
+source venv/bin/activate
+
+# 3. Upgrade pip, install dependencies
+pip install --upgrade pip
+pip install pandas requests
+
+# 4. Freeze your dependencies or install using a requirements.txt in the first place
+pip freeze > requirements.txt
+
+# 5. Develop your project
+```
+Pip, venv, and setuptools are my bread and butter. Usually, I'm just installing pre-built wheels (.whl) from PyPI (the default repository for pip) via pip.      
+I'd do this in a virtual environment in order to avoid polluting my global python environment and entering dependency hell. 
+
+If I were to install something from source, pip would refer to the `pyproject.toml` to determine how to build the package and install it. 
+> Note: Or if I were working with an old version of pip (< version 19), it would simply call setup.py to build locally.
+
+Now, maybe my ignorance is showing, but I found this approach to be completely fine. 
+It does feel a bit too imperative, so I usually omit the whole python virtual environment and make use of Docker containers in combination with a `requirements.txt` for some "declarative" project management. 
+It works fine for me, but apparently, this isn\'t the solution. A quick search on the internet shows that tools like Poetry or direnv could help.
+
+# modern python package managers
+I'll be focusing on poetry and uv, as they are the most popular python package managers.
+
+### Poetry
+Poetry basically just abstracts away the workflow I described above. This four step process of:
+
+1. Create venv 
+2. pip install packages 
+3. Manually save them to requirements.txt 
+4. Create a setup.py 
+
+becomes simply `poetry add <package>`. If you have a virtual environment in the project, it will use it automatically. If not, it will automatically create one in a special cache location. 
+By running `poetry run python script.py`, it will automatically enter that virtual environment. 
+Dependencies are specificied in a section in the `pyproject.toml` file (kind of like how I used `requirements.txt`), and the specific versions are hashed in a `poetry.lock` file for deterministic builds. 
+
+So the key features are deterministic builds, better dependency management, automatic virtual environments, and a simpler way to build/publish packages. All this while maintaining an easier user experience.
+
+```sh
+# This reads pyproject.toml & poetry.lock to install dependencies, then creates venv
+poetry install
+
+# "poetry run" automatically hooks into the correct venv
+poetry run python script.py
+```
+
+### uv
+So if Poetry already solves so many problems, is there that much to improve upon?
+Well, apparently uv is the "next generation" python package manager written in Rust, focusing on speed and centralizing different python tooling for an easier UX.
+
+```sh
+# uv sees you are missing dependencies, installs them, creates the venv, and runs the code.
+uv run script.py
+```
+
+By increasing the scope of the tooling, uv can do more than package management, it also helps with project management.
+There's plenty of little features that improve the ux like writing dependencies directly into the script files and just having someone else simply run that script (and have uv set up the environment for you, including installing the correct version of python).
+
+### speed difference
+Now, uv is written in Rust and poetry is written in Python. In addition to being slower due to the language difference, poetry is also basically a wrapper around pip, venv, and setuptools. Despite everything pointing to uv being faster, I wanted to test it anyways.
+
+So we'll install the following packages:
+1. pandas
+2. numpy
+3. scipy
+4. fastapi
+
+Then, we'll create a blank project and use `time` to measure how long it takes.
+
+```sh collapse={4-35} title="poetry -time-bench"
+~/test/poetry-bench ❯ poetry init -n
+
+~/test/poetry-bench | Python v3.12.3 ❯ time poetry add pandas numpy scipy fastapi
+Creating virtualenv poetry-bench-vLHsZiHZ-py3.12 in /home/air/.cache/pypoetry/virtualenvs
+Using version ^2.3.3 for pandas
+Using version ^2.4.1 for numpy
+Using version ^1.17.0 for scipy
+Using version ^0.128.0 for fastapi
+
+Updating dependencies
+Resolving dependencies... (1.7s)
+
+Package operations: 17 installs, 0 updates, 0 removals
+
+  - Installing idna (3.11)
+  - Installing typing-extensions (4.15.0)
+  - Installing annotated-types (0.7.0)
+  - Installing anyio (4.12.1)
+  - Installing pydantic-core (2.41.5)
+  - Installing six (1.17.0)
+  - Installing typing-inspection (0.4.2)
+  - Installing numpy (2.4.1): Pending...
+  - Installing annotated-doc (0.0.4)
+  - Installing numpy (2.4.1): Pending...
+  - Installing numpy (2.4.1)
+  - Installing pydantic (2.12.5)
+  - Installing python-dateutil (2.9.0.post0)
+  - Installing pytz (2025.2)
+  - Installing starlette (0.50.0)
+  - Installing tzdata (2025.3)
+  - Installing fastapi (0.128.0)
+  - Installing pandas (2.3.3)
+  - Installing scipy (1.17.0)
+
+Writing lock file
+
+real    0m11.372s
+user    0m6.490s
+sys     0m5.341s
+```
+As you can see, poetry takes around 11 seconds, and it also entered the virtual environment for us (as shown by my terminal prompt). 
+
+Now, for uv:
+```sh collapse={5-26} title="uv-time-bench"
+~/test/uv-bench ❯ uv init
+Initialized project `uv-bench`
+
+~/test/uv-bench ❯ time uv add pandas numpy scipy fastapi
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: .venv
+Resolved 18 packages in 1.65s
+Prepared 17 packages in 2.04s
+Installed 17 packages in 209ms
+ + annotated-doc==0.0.4
+ + annotated-types==0.7.0
+ + anyio==4.12.1
+ + fastapi==0.128.0
+ + idna==3.11
+ + numpy==2.4.1
+ + pandas==2.3.3
+ + pydantic==2.12.5
+ + pydantic-core==2.41.5
+ + python-dateutil==2.9.0.post0
+ + pytz==2025.2
+ + scipy==1.17.0
+ + six==1.17.0
+ + starlette==0.50.0
+ + typing-extensions==4.15.0
+ + typing-inspection==0.4.2
+ + tzdata==2025.3
+
+real    0m4.077s
+user    0m1.671s
+sys     0m2.892s
+```
+
+As we can see, uv is almost 3 times faster than poetry. While the speed is nice, I think the other features of uv are already enough to convince me to switch to it for at least my next few projects.
+
+# modern code linter and formatters
+Since I was exploring modern python tooling, I thought that I should also look at linters and formatters. There are many options and tools like Flake8, Pylint, and Black. However, Astral.sh's Ruff once again aims to unify tools and improve speed by building it in Rust.
+I do not use a formatter and I am only familiar with Pylint, as it is part of the VS Code python extension. However, I do see the value of trying to adhere to the style guide detailed in PEP 8, so we'll give Ruff a try. 
+
+Looking at their docs, I've also noticed that both ruff and uv can take advantage of `pyproject.toml` as sort of the sole configuration file (which was nice as it reminds me of my `configuration.nix` on NixOS)
+```toml title="pyproject.toml"
+# example config from the docs
+[tool.ruff.lint]
+# 1. Enable flake8-bugbear (`B`) rules, in addition to the defaults.
+select = ["E4", "E7", "E9", "F", "B"]
+
+# 2. Avoid enforcing line-length violations (`E501`)
+ignore = ["E501"]
+
+# 3. Avoid trying to fix flake8-bugbear (`B`) violations.
+unfixable = ["B"]
+
+# 4. Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]
+"**/{tests,docs,tools}/*" = ["E402"]
+
+[tool.ruff.format]
+# 5. Use single quotes in `ruff format`.
+quote-style = "single"
+```
+
+Honestly, I don't have much to say, as my scripts are quite simple and short. Apparently, ruff can be 10-100x faster than other formatters and linters. I'll start running `ruff check` and `ruff format` from time to time though.
+
+# type checker and LSP
+Finally, I thought that I might as well and see the last tool Astral has to offer. The last tool is ty, which is a type checker and LSP that actually came out in the last month as of the time of writing this. Now type checkers are great because they help you catch some errors early, but I didn't expect it to look like Rust. Or maybe I should've, since I'm going to also assume it\'s written in Rust. 
+
+Here's my dummy code with some type hinting. The last parameter `style` should be a str:
+```py title="example.py"
+def crazystyle(line: str, word: str, style: int):
+    output = line + "\n"
+    output += "-" * len(word)
+    output += style
+
+print(crazystyle("crazy", "fast", "word"))
+```
+
+and here is my output with ty:
+```sh
+…/uv-bench ❯ ty check example.py
+error[unsupported-operator]: Unsupported `+=` operation
+ --> example.py:5:5
+  |
+3 |     output = line + "\n"
+4 |     output += "-" * len(word)
+5 |     output += style
+  |     ------^^^^-----
+  |     |         |
+  |     |         Has type `int`
+  |     Has type `str`
+6 |
+7 | print(crazystyle("crazy", "fast", "word"))
+  |
+info: rule `unsupported-operator` is enabled by default
+
+error[invalid-argument-type]: Argument to function `crazystyle` is incorrect
+ --> example.py:7:35
+  |
+5 |     output += style
+6 |
+7 | print(crazystyle("crazy", "fast", "word"))
+  |                                   ^^^^^^ Expected `int`, found `Literal["word"]`
+  |
+info: Function defined here
+ --> example.py:2:5
+  |
+2 | def crazystyle(line: str, word: str, style: int):
+  |     ^^^^^^^^^^                       ---------- Parameter declared here
+3 |     output = line + "\n"
+4 |     output += "-" * len(word)
+  |
+info: rule `invalid-argument-type` is enabled by default
+
+Found 2 diagnostics
+```
+
+The underlining of multiple parts of the same line is so great. I can see this being pretty useful in preventing some runtime issues, so I'll definitely consider using this for the future. Alternatives like mypy seem to be slower and much more concise in the type checker output. If this is your preference, it seems that ty can also have a concise flag turned on.
+
+Lastly, there is the LSP. I do not use LSP unless I am on VS Code, and even then I mostly ignore it. So, I don't have much to say.
+
+# final thoughts
+I can\'t believe that I've been spending all this time using pip and virtualenv. However, while I was researching the python tooling ecosystem, I was definitely overwhelmed by the sheer amount of tools and distributed responsibilities, which is why Astral\'s offerings were so appealing to me.
+
+From my initial testing, this seems very promising and I look forward to further testing this over my next few python projects.

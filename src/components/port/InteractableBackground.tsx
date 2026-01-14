@@ -381,8 +381,8 @@ export default function InteractableBackground() {
                     if (cell.isBorder) {
                         char = cell.borderChar || '+';
 
-                        // Default ambient glow check
-                        let borderEnergy = cell.energy * 2.0;
+                        // Static base for border (no ambient shimmer)
+                        let borderEnergy = 0.3;
 
                         // --- Border Animation Logic ---
                         if (cell.cardIndex !== undefined) {
@@ -418,7 +418,7 @@ export default function InteractableBackground() {
                             }
                         }
 
-                        alpha = 0.2 + (borderEnergy * 0.8);
+                        alpha = 0.3 + (borderEnergy * 0.7);
                         if (alpha > 1) alpha = 1;
                         if (borderEnergy > 0.6) color = themeColors.accent;
 
