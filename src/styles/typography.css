@@ -67,7 +67,13 @@
     }
 
     .expressive-code {
-      @apply my-6 [&_.title]:font-medium!;
+      @apply my-6 [&_.title]:font-medium;
+    }
+
+    /* macOS-style traffic light buttons for terminal frames */
+    .expressive-code .frame.is-terminal .header::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 16'%3E%3Ccircle cx='8' cy='8' r='8.5' fill='%23ff5f56'/%3E%3Ccircle cx='30' cy='8' r='8.5' fill='%23ffbd2e'/%3E%3Ccircle cx='52' cy='8' r='8.5' fill='%2327c93f'/%3E%3C/svg%3E") !important;
+      opacity: 1 !important;
     }
 
     blockquote {
