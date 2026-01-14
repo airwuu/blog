@@ -1,13 +1,13 @@
 ---
-title: 'Python Tooling in 2025'
-description: 'I bought a Framework 13 about one year ago. Heres my thoughts'
+title: 'I Tried Modern Python Tooling'
+description: 'Maybe it is time for me switch off pip and venv'
 date: 2026-01-11
-tags: ['thoughts']
+tags: ['tech']
 image: './w.jpg'
 authors: ['airwu']
 ---
 
-# context
+# how it started
 I had a brief conversation with a friend about successful open source projects. During the discussion, he brought
 up astral.sh, which is a company known for its popular open source python tooling that is pairs nicely with their paid services. 
 
@@ -55,7 +55,7 @@ Poetry basically just abstracts away the workflow I described above. This four s
 
 becomes simply `poetry add <package>`. If you have a virtual environment in the project, it will use it automatically. If not, it will automatically create one in a special cache location. 
 By running `poetry run python script.py`, it will automatically enter that virtual environment. 
-Dependencies are specificied in a section in the `pyproject.toml` file (kind of like how we used `requirements.txt`), and the specific versions are hashed in a `poetry.lock` file for deterministic builds. 
+Dependencies are specificied in a section in the `pyproject.toml` file (kind of like how I used `requirements.txt`), and the specific versions are hashed in a `poetry.lock` file for deterministic builds. 
 
 So the key features are deterministic builds, better dependency management, automatic virtual environments, and a simpler way to build/publish packages. All this while maintaining an easier user experience.
 
@@ -90,7 +90,7 @@ So we'll install the following pacakges:
 
 Then, we'll create a blank project and use `time` to measure how long it takes.
 
-```sh collapse={4-35}
+```sh collapse={4-35} title="poetry -time-bench"
 ~/test/poetry-bench ❯ poetry init -n
 
 ~/test/poetry-bench | Python v3.12.3 ❯ time poetry add pandas numpy scipy fastapi
@@ -134,7 +134,7 @@ sys     0m5.341s
 As you can see, poetry takes around 11 seconds, and it also entered the virtual envrionment for us (as shown by my terminal prompt). 
 
 Now, for uv:
-```sh collapse={5-26}
+```sh collapse={5-26} title="uv-time-bench"
 ~/test/uv-bench ❯ uv init
 Initialized project `uv-bench`
 
@@ -167,7 +167,94 @@ user    0m1.671s
 sys     0m2.892s
 ```
 
-As we can see, uv is almost 3 times faster than poetry.
+As we can see, uv is almost 3 times faster than poetry. While the speed is nice, I think the other features of uv are already enough to convince me to switch to it for at least my next few projects.
 
 # modern code linter and formatters
-Since we're exploring modern python tooling, we should also look at linters. While there are many options and tools like Flake8, Pylint, and Black, astral.sh's Ruff once again aims to unify tools and improve speed.
+Since I was exploring modern python tooling, I thought that I should also look at linters and formatters. There are many options and tools like Flake8, Pylint, and Black. However, Astral.sh's Ruff once again aims to unify tools and improve speed by building it in Rust.
+I do not use a formatter and I am only familiar with Pylint, as it is part of the VS Code python extension. However, I do see the value of trying to adhere to the style guide detailed in PEP 8, so we'll give Ruff a try. 
+
+Looking at their docs, I've also noticed that both ruff and uv can take advantage of `pyproject.toml` as sort of the sole configuration file (which was nice as it reminds me of my `configuration.nix` on NixOS)
+```toml title="pyproject.toml"
+# example config from the docs
+[tool.ruff.lint]
+# 1. Enable flake8-bugbear (`B`) rules, in addition to the defaults.
+select = ["E4", "E7", "E9", "F", "B"]
+
+# 2. Avoid enforcing line-length violations (`E501`)
+ignore = ["E501"]
+
+# 3. Avoid trying to fix flake8-bugbear (`B`) violations.
+unfixable = ["B"]
+
+# 4. Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]
+"**/{tests,docs,tools}/*" = ["E402"]
+
+[tool.ruff.format]
+# 5. Use single quotes in `ruff format`.
+quote-style = "single"
+```
+
+Honestly, I don't have much to say, as my scripts are quite simple and short. Apparently, ruff can be 10-100x faster than other formatters and linters. I'll start running `ruff check` and `ruff format` from time to time though.
+
+# type checker and LSP
+Finally, I thought that I might as well and see the last tool astral has to offer. The last tool is ty, which is a type checker and LSP that actually came out in the last month as of the time of writing this. Now type checkers are great because they help you catch some errors early, but I didn't expect it to look like Rust. Or maybe I should've, since I'm going to also assume its written in Rust. 
+
+Here's my dummy code with some type hinting. The last parameter `style` should be a str:
+```py title="example.py"
+def crazystyle(line: str, word: str, style: int):
+    output = line + "\n"
+    output += "-" * len(word)
+    output += style
+
+print(crazystyle("crazy", "fast", "word"))
+```
+
+and here is my output with ty:
+```sh
+…/uv-bench ❯ ty check example.py
+error[unsupported-operator]: Unsupported `+=` operation
+ --> example.py:5:5
+  |
+3 |     output = line + "\n"
+4 |     output += "-" * len(word)
+5 |     output += style
+  |     ------^^^^-----
+  |     |         |
+  |     |         Has type `int`
+  |     Has type `str`
+6 |
+7 | print(crazystyle("crazy", "fast", "word"))
+  |
+info: rule `unsupported-operator` is enabled by default
+
+error[invalid-argument-type]: Argument to function `crazystyle` is incorrect
+ --> example.py:7:35
+  |
+5 |     output += style
+6 |
+7 | print(crazystyle("crazy", "fast", "word"))
+  |                                   ^^^^^^ Expected `int`, found `Literal["word"]`
+  |
+info: Function defined here
+ --> example.py:2:5
+  |
+2 | def crazystyle(line: str, word: str, style: int):
+  |     ^^^^^^^^^^                       ---------- Parameter declared here
+3 |     output = line + "\n"
+4 |     output += "-" * len(word)
+  |
+info: rule `invalid-argument-type` is enabled by default
+
+Found 2 diagnostics
+```
+
+The underlining of multiple parts of the same line is so great. I can see this being pretty useful in preventing some runtime issues, so I'll definitely consider using this for the future. Alternatives like mypy seem to be slower and much more concise in the type checker output. If this is your preference, it seems that ty can also have a concise flag turned on.
+
+Lastly, there is the LSP. I do not use LSP unless I am on VS Code, and even then I mostly ignore it. So, I don't have much to say.
+
+# final thoughts
+I can\'t believe that I've been spending all this time using pip and virtualenv. However, while I was researching the python tooling ecosystem, I was definitely overwhelmed by the sheer amount of tools and distributed responsibilities, which is why astrals offerings were so appealing to me.
+
+From my initial testing, this seems very promising and I look forward to further testing this over my next few python projects.
